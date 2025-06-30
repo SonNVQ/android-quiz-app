@@ -1,0 +1,241 @@
+Báo Cáo API Flashcard
+Báo cáo này cung cấp hướng dẫn chi tiết về cách sử dụng API Flashcard, bao gồm thông tin về các endpoint, cách sử dụng, ví dụ về yêu cầu và phản hồi.
+
+Tổng Quan API
+API Flashcard là một API RESTful được xây dựng bằng ASP.NET Core, được lưu trữ tại https://learnlanguage-aggbd0h2h6grc6es.eastasia-01.azurewebsites.net/. API cung cấp các endpoint để quản lý nhóm flashcard và flashcard, bao gồm tạo, cập nhật, lấy thông tin, truy vấn phân trang và xóa.
+
+Các Endpoint
+1. GET /api/Flashcard/{groupId}
+Mô tả: Lấy thông tin nhóm flashcard và các flashcard thuộc nhóm theo ID.
+
+Phản Hồi (200 OK):
+
+{
+    "id": "guid",
+    "name": "string",
+    "description": "string",
+    "isPublic": boolean,
+    "flashcards": [
+        {
+            "term": "string",
+            "definition": "string"
+        }
+    ]
+}
+            
+Phản Hồi Lỗi:
+
+400 Bad Request: ID nhóm không hợp lệ.
+404 Not Found: Không tìm thấy flashcard cho nhóm.
+Ví dụ (JavaScript):
+
+fetch('https://learnlanguage-aggbd0h2h6grc6es.eastasia-01.azurewebsites.net/api/Flashcard/123e4567-e89b-12d3-a456-426614174000')
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error('Lỗi:', error));
+            
+2. POST /api/Flashcard
+Mô tả: Tạo một nhóm flashcard mới và các flashcard thuộc nhóm (yêu cầu xác thực).
+
+Header Yêu Cầu: Authorization: Bearer {token}
+
+Body Yêu Cầu:
+
+{
+    "name": "string",
+    "description": "string",
+    "isPublic": boolean,
+    "flashcards": [
+        {
+            "term": "string",
+            "definition": "string"
+        }
+    ]
+}
+            
+Phản Hồi (200 OK):
+
+{
+    "id": "guid",
+    "name": "string",
+    "description": "string",
+    "isPublic": boolean,
+    "flashcards": [
+        {
+            "term": "string",
+            "definition": "string"
+        }
+    ]
+}
+            
+Phản Hồi Lỗi:
+
+400 Bad Request: Body yêu cầu không hợp lệ hoặc không tạo được nhóm.
+401 Unauthorized: Token không hợp lệ.
+Ví dụ (JavaScript):
+
+fetch('https://learnlanguage-aggbd0h2h6grc6es.eastasia-01.azurewebsites.net/api/Flashcard', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+    },
+    body: JSON.stringify({
+        name: 'Nhóm Flashcard',
+        description: 'Mô tả nhóm',
+        isPublic: true,
+        flashcards: [
+            { term: 'Từ 1', definition: 'Định nghĩa 1' },
+            { term: 'Từ 2', definition: 'Định nghĩa 2' }
+        ]
+    })
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error('Lỗi:', error));
+            
+3. PUT /api/Flashcard
+Mô tả: Cập nhật nhóm flashcard và các flashcard thuộc nhóm (yêu cầu xác thực).
+
+Header Yêu Cầu: Authorization: Bearer {token}
+
+Body Yêu Cầu:
+
+{
+    "id": "guid",
+    "name": "string",
+    "description": "string",
+    "isPublic": boolean,
+    "flashcards": [
+        {
+            "term": "string",
+            "definition": "string"
+        }
+    ]
+}
+            
+Phản Hồi (200 OK):
+
+{
+    "id": "guid",
+    "name": "string",
+    "description": "string",
+    "isPublic": boolean,
+    "flashcards": [
+        {
+            "term": "string",
+            "definition": "string"
+        }
+    ]
+}
+            
+Phản Hồi Lỗi:
+
+400 Bad Request: Dữ liệu nhóm hoặc ID không hợp lệ, tên nhóm rỗng, hoặc không có flashcard.
+401 Unauthorized: Token không hợp lệ.
+404 Not Found: Không tìm thấy nhóm hoặc không có quyền.
+500 Internal Server Error: Lỗi khi cập nhật nhóm.
+Ví dụ (JavaScript):
+
+fetch('https://learnlanguage-aggbd0h2h6grc6es.eastasia-01.azurewebsites.net/api/Flashcard', {
+    method: 'PUT',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+    },
+    body: JSON.stringify({
+        id: '123e4567-e89b-12d3-a456-426614174000',
+        name: 'Nhóm Cập Nhật',
+        description: 'Mô tả mới',
+        isPublic: false,
+        flashcards: [
+            { term: 'Từ Mới 1', definition: 'Định nghĩa Mới 1' }
+        ]
+    })
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error('Lỗi:', error));
+            
+4. GET /api/Flashcard/paged
+Mô tả: Lấy danh sách nhóm flashcard phân trang (công khai hoặc riêng tư của người dùng).
+
+Tham Số Query:
+
+Tham Số	Kiểu	Mô Tả
+search	chuỗi	Lọc theo tên nhóm (tùy chọn)
+isPublic	boolean	Lọc nhóm công khai (true) hoặc riêng tư (false, yêu cầu token)
+pageNumber	số nguyên	Số trang (mặc định: 1)
+pageSize	số nguyên	Số mục mỗi trang (mặc định: 10, tối đa: 100)
+Phản Hồi (200 OK):
+
+{
+    "items": [
+        {
+            "id": "guid",
+            "name": "string",
+            "description": "string",
+            "isPublic": boolean
+        }
+    ],
+    "totalCount": integer,
+    "pageNumber": integer,
+    "pageSize": integer,
+    "totalPages": integer
+}
+            
+Phản Hồi Lỗi:
+
+400 Bad Request: Số trang hoặc kích thước trang không hợp lệ.
+401 Unauthorized: Token không hợp lệ khi truy vấn nhóm riêng tư.
+500 Internal Server Error: Lỗi khi truy xuất nhóm.
+Ví dụ (JavaScript):
+
+fetch('https://learnlanguage-aggbd0h2h6grc6es.eastasia-01.azurewebsites.net/api/Flashcard/paged?pageNumber=1&pageSize=10&isPublic=true&search=nhóm')
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error('Lỗi:', error));
+            
+5. DELETE /api/Flashcard/{id}
+Mô tả: Xóa nhóm flashcard và các flashcard thuộc nhóm (yêu cầu xác thực).
+
+Header Yêu Cầu: Authorization: Bearer {token}
+
+Phản Hồi (204 No Content): Xóa thành công.
+
+Phản Hồi Lỗi:
+
+400 Bad Request: ID nhóm không hợp lệ.
+401 Unauthorized: Token không hợp lệ.
+403 Forbidden: Không có quyền xóa (không phải admin hoặc không phải người tạo).
+404 Not Found: Không tìm thấy nhóm.
+500 Internal Server Error: Lỗi khi xóa nhóm.
+Ví dụ (JavaScript):
+
+fetch('https://learnlanguage-aggbd0h2h6grc6es.eastasia-01.azurewebsites.net/api/Flashcard/123e4567-e89b-12d3-a456-426614174000', {
+    method: 'DELETE',
+    headers: {
+        'Authorization': 'Bearer ' + token
+    }
+})
+.then(response => {
+    if (response.status === 204) console.log('Xóa thành công');
+})
+.catch(error => console.error('Lỗi:', error));
+            
+Hướng Dẫn Sử Dụng
+Lấy Flashcard Theo Nhóm: Gửi yêu cầu GET đến /api/Flashcard/{groupId} để lấy thông tin nhóm và flashcard.
+Tạo Nhóm Flashcard: Sử dụng /api/Flashcard (POST) với token hợp lệ để tạo nhóm và flashcard.
+Cập Nhật Nhóm Flashcard: Sử dụng /api/Flashcard (PUT) với token hợp lệ để cập nhật nhóm và flashcard.
+Lấy Danh Sách Nhóm Phân Trang: Sử dụng /api/Flashcard/paged với các tham số query để lấy danh sách nhóm công khai hoặc riêng tư.
+Xóa Nhóm Flashcard: Sử dụng /api/Flashcard/{id} (DELETE) với token hợp lệ để xóa nhóm và flashcard (admin hoặc người tạo).
+Xử Lý Lỗi
+Luôn kiểm tra trạng thái phản hồi:
+
+200 OK: Thao tác thành công.
+204 No Content: Xóa thành công.
+400 Bad Request: Đầu vào hoặc tham số không hợp lệ.
+401 Unauthorized: Xác thực không hợp lệ hoặc thiếu.
+403 Forbidden: Không có quyền thực hiện thao tác.
+404 Not Found: Không tìm thấy tài nguyên.
+500 Internal Server Error: Lỗi phía máy chủ.

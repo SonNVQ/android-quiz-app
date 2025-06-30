@@ -1,0 +1,118 @@
+<resources>
+    <string name="app_name">LinguaRead</string>
+    
+    <!-- Authentication Strings -->
+    <string name="login_title">Welcome Back</string>
+    <string name="login_subtitle">Sign in to continue your learning</string>
+    <string name="signup_title">Create Account</string>
+    <string name="signup_subtitle">Join us to start your learning journey</string>
+    <string name="email_hint">Email</string>
+    <string name="username_hint">Username</string>
+    <string name="password_hint">Password</string>
+    <string name="confirm_password_hint">Confirm Password</string>
+    <string name="login_button">Login</string>
+    <string name="signup_button">Sign Up</string>
+    <string name="logout_button">Logout</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="no_account">Don\'t have an account? Sign up</string>
+    <string name="have_account">Already have an account? Login</string>
+    
+    <!-- Error Messages -->
+    <string name="error_invalid_email">Please enter a valid email address</string>
+    <string name="error_invalid_password">Password must be at least 8 characters with uppercase, number, and special character</string>
+    <string name="error_weak_password">Password must be at least 8 characters with uppercase, number, and special character</string>
+    <string name="error_password_mismatch">Passwords do not match</string>
+    <string name="error_passwords_not_match">Passwords do not match</string>
+    <string name="error_empty_fields">Please fill in all fields</string>
+    <string name="error_login_failed">Invalid credentials. Please try again.</string>
+    <string name="error_signup_failed">Registration failed. Please try again.</string>
+    <string name="error_email_exists">Email already exists. Please use a different email or login.</string>
+    <string name="error_invalid_input">Invalid input. Please check your information and try again.</string>
+    <string name="error_network">Network error. Please check your connection.</string>
+    <string name="error_server">Server error. Please try again later.</string>
+    <string name="error_account_locked">Account temporarily locked due to multiple failed attempts.</string>
+    
+    <!-- Success Messages -->
+    <string name="success_signup">Account created successfully!</string>
+    <string name="success_logout">Logged out successfully</string>
+    
+    <!-- Confirmation Messages -->
+    <string name="confirm_logout_title">Logout</string>
+    <string name="confirm_logout">Are you sure you want to logout?</string>
+    <string name="confirm_logout_message">Are you sure you want to logout?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="cancel">Cancel</string>
+    
+    <!-- Loading Messages -->
+    <string name="loading_login">Logging in...</string>
+    <string name="loading_signup">Creating account...</string>
+    <string name="loading_logout">Logging out...</string>
+    
+    <!-- Profile Strings -->
+    <string name="profile_title">Profile</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="profile_picture">Profile Picture</string>
+    <string name="username">Username</string>
+    <string name="email">Email</string>
+    <string name="current_password">Current Password</string>
+    <string name="new_password">New Password</string>
+    <string name="confirm_new_password">Confirm New Password</string>
+    <string name="change_password">Change Password</string>
+    <string name="learning_progress">Learning Progress</string>
+    <string name="logout">Logout</string>
+    <string name="logout_confirmation_message">Are you sure you want to logout?</string>
+    <string name="cancel_edit">Cancel</string>
+    <string name="view_profile_title">View Profile</string>
+    <string name="update_profile_title">Update Profile</string>
+    
+    <!-- Profile Success Messages -->
+    <string name="profile_update_success">Profile updated successfully!</string>
+    <string name="password_change_success">Password changed successfully!</string>
+    
+    <!-- Profile Error Messages -->
+    <string name="error_invalid_username">Username must be at least 3 characters long</string>
+    <string name="error_profile_update_failed">Failed to update profile. Please try again.</string>
+    <string name="error_password_change_failed">Failed to change password. Please try again.</string>
+    <string name="error_current_password_incorrect">Current password is incorrect</string>
+    
+    <!-- Flashcard Strings -->
+    <string name="public_flashcards">Public Flashcards</string>
+    <string name="search_flashcards">Search Flashcards</string>
+    <string name="search_hint">Search by title or description...</string>
+    <string name="no_flashcards_available">No flashcards available</string>
+    <string name="no_flashcards_message">No flashcards available at the moment. Please check back later.</string>
+    <string name="retry">Retry</string>
+    <string name="filter_flashcards">Filter flashcards</string>
+    <string name="card_count_icon">Card count</string>
+    <string name="view_flashcard_action">View flashcard</string>
+    <string name="loading_flashcards">Loading flashcards...</string>
+    <string name="error_loading_flashcards">Failed to load flashcards. Please try again.</string>
+    <string name="vocabulary_tools">Vocabulary Tools</string>
+    
+    <!-- Navigation -->
+    <string name="navigate_to_flashcards">View Public Flashcards</string>
+    <string name="view_public_flashcards">View Public Flashcards</string>
+    
+    <!-- Flashcard Detail -->
+    <string name="flashcard_detail_title">Flashcard Details</string>
+    <string name="card_count">Card count</string>
+    <string name="flashcard_detail_placeholder">Coming Soon</string>
+    <string name="flashcard_detail_placeholder_description">Flashcard study features will be available in a future update.</string>
+    
+    <!-- My Flashcards -->
+    <string name="my_flashcards">My Flashcards</string>
+    <string name="search_my_flashcards">Search My Flashcards</string>
+    <string name="filter_options">Filter Options</string>
+    <string name="sort_recent">Most Recent</string>
+    <string name="sort_alphabetical">Alphabetical</string>
+    <string name="sort_oldest">Oldest First</string>
+    <string name="no_my_flashcards_available">No flashcards created yet</string>
+    <string name="no_my_flashcards_message">You have no flashcards yet. Start creating or browse public sets.</string>
+    <string name="create_flashcard">Create Flashcard</string>
+    <string name="loading_my_flashcards">Loading your flashcards...</string>
+    <string name="error_loading_my_flashcards">Failed to load your flashcards. Please try again.</string>
+    <string name="connection_error">Connection error. Please try again later.</string>
+
+</resources>

@@ -1,0 +1,215 @@
+Báo Cáo API Người Dùng
+Báo cáo này cung cấp hướng dẫn chi tiết về cách sử dụng API Người Dùng, bao gồm thông tin về các endpoint, cách sử dụng, ví dụ về yêu cầu và phản hồi.
+
+Tổng Quan API
+API Người Dùng là một API RESTful được xây dựng bằng ASP.NET Core, được lưu trữ tại https://learnlanguage-aggbd0h2h6grc6es.eastasia-01.azurewebsites.net/. API cung cấp các endpoint để quản lý người dùng, bao gồm đăng ký, đăng nhập, cập nhật thông tin người dùng, lấy thông tin người dùng theo ID và truy vấn danh sách người dùng theo trang (chỉ dành cho quản trị viên).
+
+Các Endpoint
+1. POST /api/User/register
+Mô tả: Đăng ký một người dùng mới.
+
+Body Yêu Cầu:
+
+{
+    "Email": "string",
+    "Password": "string",
+    "UserName": "string"
+}
+            
+Phản Hồi (200 OK):
+
+{
+    "id": "guid",
+    "userName": "string",
+    "email": "string",
+    "isActive": boolean,
+    "role": "string"
+}
+            
+Phản Hồi Lỗi:
+
+400 Bad Request: Body yêu cầu không hợp lệ hoặc email đã được đăng ký.
+Ví dụ (JavaScript):
+
+fetch('https://learnlanguage-aggbd0h2h6grc6es.eastasia-01.azurewebsites.net/api/User/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        email: 'user@example.com',
+        password: 'Password123',
+        userName: 'TestUser'
+    })
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error('Lỗi:', error));
+            
+2. POST /api/User/login
+Mô tả: Xác thực người dùng và trả về token JWT.
+
+Body Yêu Cầu:
+
+{
+    "Email": "string",
+    "Password": "string"
+}
+            
+Phản Hồi (200 OK):
+
+{
+    "token": "string"
+}
+            
+Phản Hồi Lỗi:
+
+400 Bad Request: Body yêu cầu không hợp lệ.
+401 Unauthorized: Thông tin đăng nhập không hợp lệ.
+Ví dụ (JavaScript):
+
+fetch('https://learnlanguage-aggbd0h2h6grc6es.eastasia-01.azurewebsites.net/api/User/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        email: 'user@example.com',
+        password: 'Password123'
+    })
+})
+.then(response => response.json())
+.then(data => console.log(data.token))
+.catch(error => console.error('Lỗi:', error));
+            
+3. PUT /api/User
+Mô tả: Cập nhật thông tin người dùng (yêu cầu xác thực).
+
+Header Yêu Cầu: Authorization: Bearer {token}
+
+Body Yêu Cầu:
+
+{
+    "Email": "string",
+    "Password": "string",
+    "UserName": "string",
+    "IsActive": boolean,
+    "Role": "string"
+}
+            
+Phản Hồi (200 OK):
+
+{
+    "id": "guid",
+    "userName": "string",
+    "email": "string",
+    "isActive": boolean,
+    "role": "string"
+}
+            
+Phản Hồi Lỗi:
+
+400 Bad Request: Body yêu cầu không hợp lệ.
+401 Unauthorized: Token không hợp lệ hoặc thiếu.
+404 Not Found: Không tìm thấy người dùng.
+Ví dụ (JavaScript):
+
+fetch('https://learnlanguage-aggbd0h2h6grc6es.eastasia-01.azurewebsites.net/api/User', {
+    method: 'PUT',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+    },
+    body: JSON.stringify({
+        email: 'user@example.com',
+        password: 'NewPassword123',
+        userName: 'UpdatedUser',
+        isActive: true,
+        role: 'User'
+    })
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error('Lỗi:', error));
+            
+4. GET /api/User/{id}
+Mô tả: Lấy thông tin người dùng theo ID.
+
+Phản Hồi (200 OK):
+
+{
+    "id": "guid",
+    "userName": "string",
+    "email": "string",
+    "isActive": boolean,
+    "role": "string"
+}
+            
+Phản Hồi Lỗi:
+
+404 Not Found: Không tìm thấy người dùng.
+Ví dụ (JavaScript):
+
+fetch('https://learnlanguage-aggbd0h2h6grc6es.eastasia-01.azurewebsites.net/api/User/123e4567-e89b-12d3-a456-426614174000')
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error('Lỗi:', error));
+            
+5. GET /api/User/paged
+Mô tả: Lấy danh sách người dùng phân trang (yêu cầu vai trò Admin).
+
+Header Yêu Cầu: Authorization: Bearer {token}
+
+Tham Số Query:
+
+Tham Số	Kiểu	Mô Tả
+search	chuỗi	Lọc theo tên người dùng hoặc email (tùy chọn)
+role	chuỗi	Lọc theo vai trò (tùy chọn)
+isActive	boolean	Lọc theo trạng thái hoạt động (tùy chọn)
+pageNumber	số nguyên	Số trang (mặc định: 1)
+pageSize	số nguyên	Số mục mỗi trang (mặc định: 10, tối đa: 100)
+Phản Hồi (200 OK):
+
+{
+    "items": [
+        {
+            "id": "guid",
+            "userName": "string",
+            "email": "string",
+            "isActive": boolean,
+            "role": "string"
+        }
+    ],
+    "totalCount": integer,
+    "pageNumber": integer,
+    "pageSize": integer,
+    "totalPages": integer,
+    "role": "string"
+}
+            
+Phản Hồi Lỗi:
+
+400 Bad Request: Số trang hoặc kích thước trang không hợp lệ.
+401 Unauthorized: Người dùng không có vai trò Admin.
+500 Internal Server Error: Lỗi máy chủ khi truy xuất.
+Ví dụ (JavaScript):
+
+fetch('https://learnlanguage-aggbd0h2h6grc6es.eastasia-01.azurewebsites.net/api/User/paged?pageNumber=1&pageSize=10&search=test', {
+    headers: {
+        'Authorization': 'Bearer ' + token
+    }
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error('Lỗi:', error));
+            
+Hướng Dẫn Sử Dụng
+Đăng Ký Người Dùng: Gửi yêu cầu POST đến /api/User/register với email, mật khẩu và tên người dùng.
+Đăng Nhập: Sử dụng /api/User/login để lấy token JWT cho các yêu cầu xác thực.
+Cập Nhật Người Dùng: Sử dụng /api/User (PUT) với token hợp lệ để cập nhật thông tin người dùng.
+Lấy Người Dùng Theo ID: Sử dụng /api/User/{id} để lấy thông tin người dùng cụ thể.
+Lấy Danh Sách Người Dùng Phân Trang: Sử dụng /api/User/paged với các tham số query phù hợp và token vai trò Admin để lấy danh sách người dùng phân trang.
+Xử Lý Lỗi
+Luôn kiểm tra trạng thái phản hồi:
+
+200 OK: Thao tác thành công.
+400 Bad Request: Đầu vào hoặc tham số không hợp lệ.
+401 Unauthorized: Xác thực không hợp lệ hoặc thiếu.
+404 Not Found: Không tìm thấy tài nguyên.
+500 Internal Server Error: Lỗi phía máy chủ.

@@ -1,0 +1,314 @@
+Báo Cáo API Reading
+Báo cáo này cung cấp hướng dẫn chi tiết về cách sử dụng API Reading, bao gồm thông tin về các endpoint, cách sử dụng, ví dụ về yêu cầu và phản hồi.
+
+Tổng Quan API
+API Reading là một API RESTful được xây dựng bằng ASP.NET Core, được lưu trữ tại https://learnlanguage-aggbd0h2h6grc6es.eastasia-01.azurewebsites.net/. API cung cấp các endpoint để quản lý bài đọc và câu hỏi liên quan, bao gồm tạo, cập nhật, lấy thông tin, truy vấn phân trang và xóa (yêu cầu vai trò Admin cho các thao tác tạo, cập nhật, xóa).
+
+Các Endpoint
+1. POST /api/Reading
+Mô tả: Tạo một bài đọc mới và các câu hỏi liên quan (yêu cầu xác thực và vai trò Admin).
+
+Header Yêu Cầu: Authorization: Bearer {token}
+
+Body Yêu Cầu:
+
+{
+    "title": "string",
+    "content": "string",
+    "imageUrl": "string",
+    "description": "string",
+    "questions": [
+        {
+            "questionText": "string",
+            "questionType": "1",
+            "optionA": "string",
+            "optionB": "string",
+            "optionC": "string",
+            "optionD": "string",
+            "correctOption": "string" // "A"/"B"/"C"/"D"
+        },
+        {
+            "questionText": "string",
+            "questionType": "2",
+            "answer": "string"
+        }
+    ]
+}
+            
+Phản Hồi (200 OK):
+
+{
+    "readingId": "guid",
+    "title": "string",
+    "content": "string",
+    "imageUrl": "string",
+    "description": "string",
+    "userId": "guid",
+    "questions": [
+        {
+            "questionText": "string",
+            "questionType": "1",
+            "optionA": "string",
+            "optionB": "string",
+            "optionC": "string",
+            "optionD": "string",
+            "correctOption": "string"
+        },
+        {
+            "questionText": "string",
+            "questionType": "2",
+            "answer": "string"
+        }
+    ]
+}
+            
+Phản Hồi Lỗi:
+
+400 Bad Request: Dữ liệu bài đọc hoặc câu hỏi không hợp lệ (thiếu tiêu đề, nội dung, câu hỏi, tùy chọn, hoặc đáp án).
+401 Unauthorized: Token không hợp lệ hoặc không có vai trò Admin.
+500 Internal Server Error: Lỗi khi tạo bài đọc.
+Ví dụ (JavaScript):
+
+fetch('https://learnlanguage-aggbd0h2h6grc6es.eastasia-01.azurewebsites.net/api/Reading', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+    },
+    body: JSON.stringify({
+        title: 'Bài Đọc Mới',
+        content: 'Nội dung bài đọc...',
+        imageUrl: 'https://example.com/image.jpg',
+        description: 'Mô tả bài đọc',
+        questions: [
+            {
+                questionText: 'Câu hỏi 1?',
+                questionType: 'SingleChoice',
+                optionA: 'op1',
+                optionB: 'op2',
+                optionC: 'op3',
+                optionD: 'op4',
+                correctOption: 'A'
+            },
+            {
+                questionText: 'Điền vào chỗ trống: ___',
+                questionType: 'FillInTheBlank',
+                answer: 'Đáp án'
+            }
+        ]
+    })
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error('Lỗi:', error));
+            
+2. GET /api/Reading/{id}
+Mô tả: Lấy thông tin bài đọc và các câu hỏi theo ID.
+
+Phản Hồi (200 OK):
+
+{
+    "id": "guid",
+    "title": "string",
+    "content": "string",
+    "imageUrl": "string",
+    "description": "string",
+    "userId": "guid",
+    "questions": [
+        {
+            "id": "guid",
+            "questionText": "string",
+            "questionType": "1",
+            "optionA": "string",
+            "optionB": "string",
+            "optionC": "string",
+            "optionD": "string",
+            "correctOption": "string"
+        },
+                {
+            "id": "guid",
+            "questionText": "string",
+            "questionType": "2",
+            "answer": "string"
+        }
+    ]
+}
+            
+Phản Hồi Lỗi:
+
+400 Bad Request: ID bài đọc không hợp lệ.
+404 Not Found: Không tìm thấy bài đọc.
+Ví dụ (JavaScript):
+
+fetch('https://learnlanguage-aggbd0h2h6grc6es.eastasia-01.azurewebsites.net/api/Reading/123e4567-e89b-12d3-a456-426614174000')
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error('Lỗi:', error));
+            
+3. GET /api/Reading/paged
+Mô tả: Lấy danh sách bài đọc phân trang.
+
+Tham Số Query:
+
+Tham Số	Kiểu	Mô Tả
+search	chuỗi	Lọc theo tiêu đề (tùy chọn)
+pageNumber	số nguyên	Số trang (mặc định: 1)
+pageSize	số nguyên	Số mục mỗi trang (mặc định: 10, tối đa: 100)
+Phản Hồi (200 OK):
+
+{
+    "items": [
+        {
+            "id": "guid",
+            "title": "string",
+            "content": "string",
+            "imageUrl": "string",
+            "description": "string",
+            "userId": "guid"
+        }
+    ],
+    "totalCount": integer,
+    "pageNumber": integer,
+    "pageSize": integer,
+    "totalPages": integer
+}
+            
+Phản Hồi Lỗi:
+
+400 Bad Request: Số trang hoặc kích thước trang không hợp lệ.
+500 Internal Server Error: Lỗi khi truy xuất bài đọc.
+Ví dụ (JavaScript):
+
+fetch('https://learnlanguage-aggbd0h2h6grc6es.eastasia-01.azurewebsites.net/api/Reading/paged?pageNumber=1&pageSize=10&search=bài')
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error('Lỗi:', error));
+            
+4. PUT /api/Reading
+Mô tả: Cập nhật bài đọc và các câu hỏi liên quan (yêu cầu xác thực và vai trò Admin).
+
+Header Yêu Cầu: Authorization: Bearer {token}
+
+Body Yêu Cầu:
+
+{
+    "id": "guid",
+    "title": "string",
+    "content": "string",
+    "imageUrl": "string",
+    "description": "string",
+    "questions": [
+        {
+            "questionText": "string",
+            "questionType": "1",
+            "optionA": "string",
+            "optionB": "string",
+            "optionC": "string",
+            "optionD": "string",
+            "correctOption": "string" // "A"/"B"/"C"/"D"
+        },
+                {
+            "questionText": "string",
+            "questionType": "2",
+            "answer": "string"
+        }
+    ]
+}
+            
+Phản Hồi (200 OK):
+
+{
+    "readingId": "guid",
+    "title": "string",
+    "content": "string",
+    "imageUrl": "string",
+    "description": "string",
+    "userId": "guid",
+    "questions": [
+        {
+            "questionText": "string",
+            "questionType": "1",
+            "optionA": "string",
+            "optionB": "string",
+            "optionC": "string",
+            "optionD": "string",
+            "correctOption": "string",
+            "answer": "string"
+        },
+                {
+            "questionText": "string",
+            "questionType": "2",
+            "answer": "string"
+        }
+    ]
+}
+            
+Phản Hồi Lỗi:
+
+400 Bad Request: Dữ liệu bài đọc không hợp lệ hoặc thiếu tiêu đề/nội dung.
+401 Unauthorized: Token không hợp lệ hoặc không có vai trò Admin.
+404 Not Found: Không tìm thấy bài đọc hoặc không có quyền.
+500 Internal Server Error: Lỗi khi cập nhật bài đọc.
+Ví dụ (JavaScript):
+
+fetch('https://learnlanguage-aggbd0h2h6grc6es.eastasia-01.azurewebsites.net/api/Reading', {
+    method: 'PUT',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+    },
+    body: JSON.stringify({
+        id: '123e4567-e89b-12d3-a456-426614174000',
+        title: 'Bài Đọc Cập Nhật',
+        content: 'Nội dung mới...',
+        questions: [
+            {
+                questionText: 'Câu hỏi mới?',
+                questionType: 'FillInTheBlank',
+                answer: 'Đáp án mới'
+            }
+        ]
+    })
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error('Lỗi:', error));
+            
+5. DELETE /api/Reading/{id}
+Mô tả: Xóa bài đọc và các câu hỏi liên quan (yêu cầu xác thực và vai trò Admin).
+
+Header Yêu Cầu: Authorization: Bearer {token}
+
+Phản Hồi (200 OK): "Reading deleted successfully."
+
+Phản Hồi Lỗi:
+
+400 Bad Request: ID bài đọc không hợp lệ.
+401 Unauthorized: Token không hợp lệ hoặc không có vai trò Admin.
+404 Not Found: Không tìm thấy bài đọc.
+Ví dụ (JavaScript):
+
+fetch('https://learnlanguage-aggbd0h2h6grc6es.eastasia-01.azurewebsites.net/api/Reading/123e4567-e89b-12d3-a456-426614174000', {
+    method: 'DELETE',
+    headers: {
+        'Authorization': 'Bearer ' + token
+    }
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error('Lỗi:', error));
+            
+Hướng Dẫn Sử Dụng
+Tạo Bài Đọc: Gửi yêu cầu POST đến /api/Reading với token hợp lệ và vai trò Admin để tạo bài đọc và câu hỏi.
+Lấy Bài Đọc Theo ID: Sử dụng /api/Reading/{id} để lấy thông tin bài đọc và câu hỏi.
+Lấy Danh Sách Bài Đọc Phân Trang: Sử dụng /api/Reading/paged với các tham số query để lấy danh sách bài đọc.
+Cập Nhật Bài Đọc: Sử dụng /api/Reading (PUT) với token hợp lệ và vai trò Admin để cập nhật bài đọc và câu hỏi.
+Xóa Bài Đọc: Sử dụng /api/Reading/{id} (DELETE) với token hợp lệ và vai trò Admin để xóa bài đọc và câu hỏi.
+Xử Lý Lỗi
+Luôn kiểm tra trạng thái phản hồi:
+
+200 OK: Thao tác thành công.
+400 Bad Request: Đầu vào hoặc tham số không hợp lệ.
+401 Unauthorized: Xác thực không hợp lệ hoặc thiếu vai trò Admin.
+404 Not Found: Không tìm thấy tài nguyên.
+500 Internal Server Error: Lỗi phía máy chủ.
