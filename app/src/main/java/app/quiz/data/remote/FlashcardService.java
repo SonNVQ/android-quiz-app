@@ -99,6 +99,72 @@ public class FlashcardService {
     }
     
     /**
+     * Create a new flashcard group with flashcards
+     * Implements UC-12 normal sequence: create flashcard
+     * 
+     * @param authToken User authentication token
+     * @param name Flashcard group name
+     * @param description Flashcard group description (optional)
+     * @param isPublic Whether the flashcard group is public
+     * @param flashcards List of flashcards to include
+     * @param callback Response callback
+     */
+    public void createFlashcard(String authToken, String name, String description, boolean isPublic,
+                               List<Flashcard> flashcards, FlashcardCallback<FlashcardGroup> callback) {
+        executorService.execute(() -> {
+            try {
+                // Validate input
+                if (authToken == null || authToken.trim().isEmpty()) {
+                    callback.onError("Authentication required", 401);
+                    return;
+                }
+                
+                if (name == null || name.trim().isEmpty()) {
+                    callback.onError("Flashcard title is required", 400);
+                    return;
+                }
+                
+                if (flashcards == null || flashcards.isEmpty()) {
+                    callback.onError("At least one flashcard is required", 400);
+                    return;
+                }
+                
+                // Build request body
+                JSONObject requestBody = new JSONObject();
+                requestBody.put("name", name.trim());
+                requestBody.put("description", description != null ? description.trim() : "");
+                requestBody.put("isPublic", isPublic);
+                
+                JSONArray flashcardsArray = new JSONArray();
+                for (Flashcard flashcard : flashcards) {
+                    if (flashcard.getTerm() == null || flashcard.getTerm().trim().isEmpty() ||
+                        flashcard.getDefinition() == null || flashcard.getDefinition().trim().isEmpty()) {
+                        callback.onError("All flashcard terms and definitions are required", 400);
+                        return;
+                    }
+                    
+                    JSONObject flashcardJson = new JSONObject();
+                    flashcardJson.put("term", flashcard.getTerm().trim());
+                    flashcardJson.put("definition", flashcard.getDefinition().trim());
+                    flashcardsArray.put(flashcardJson);
+                }
+                requestBody.put("flashcards", flashcardsArray);
+                
+                String response = makePostRequest(FLASHCARD_DETAIL_ENDPOINT, requestBody.toString(), authToken);
+                FlashcardGroup createdGroup = parseFlashcardGroupResponse(response);
+                callback.onSuccess(createdGroup);
+                
+            } catch (ApiException e) {
+                Log.e(TAG, "Create flashcard API error: " + e.getMessage());
+                callback.onError(e.getMessage(), e.getStatusCode());
+            } catch (Exception e) {
+                Log.e(TAG, "Create flashcard unexpected error: " + e.getMessage());
+                callback.onError("Network error occurred", -1);
+            }
+        });
+    }
+
+    /**
      * Get paged list of user's private flashcard groups
      * Implements UC-08: View my flashcards - retrieve flashcards created by the user
      * 
@@ -184,6 +250,19 @@ public class FlashcardService {
      */
     private String makeAuthenticatedGetRequest(String endpoint, String authToken) throws ApiException {
         return makeRequest(endpoint, "GET", authToken, null);
+    }
+    
+    /**
+     * Make authenticated HTTP POST request
+     * 
+     * @param endpoint API endpoint
+     * @param requestBody Request body JSON
+     * @param authToken Authentication token
+     * @return Response string
+     * @throws ApiException If request fails
+     */
+    private String makePostRequest(String endpoint, String requestBody, String authToken) throws ApiException {
+        return makeRequest(endpoint, "POST", authToken, requestBody);
     }
     
     /**
@@ -296,6 +375,38 @@ public class FlashcardService {
      * @throws JSONException If JSON parsing fails
      */
     private FlashcardGroup parseFlashcardGroupDetails(String jsonResponse) throws JSONException {
+        JSONObject responseJson = new JSONObject(jsonResponse);
+        
+        FlashcardGroup group = new FlashcardGroup();
+        group.setId(responseJson.getString("id"));
+        group.setName(responseJson.getString("name"));
+        group.setDescription(responseJson.optString("description", ""));
+        group.setPublic(responseJson.getBoolean("isPublic"));
+        
+        JSONArray flashcardsArray = responseJson.getJSONArray("flashcards");
+        List<Flashcard> flashcards = new ArrayList<>();
+        
+        for (int i = 0; i < flashcardsArray.length(); i++) {
+            JSONObject flashcardJson = flashcardsArray.getJSONObject(i);
+            Flashcard flashcard = new Flashcard();
+            flashcard.setTerm(flashcardJson.getString("term"));
+            flashcard.setDefinition(flashcardJson.getString("definition"));
+            
+            flashcards.add(flashcard);
+        }
+        
+        group.setFlashcards(flashcards);
+        return group;
+    }
+    
+    /**
+     * Parse flashcard group response from JSON (for create operation)
+     * 
+     * @param jsonResponse JSON response string
+     * @return FlashcardGroup object
+     * @throws JSONException If JSON parsing fails
+     */
+    private FlashcardGroup parseFlashcardGroupResponse(String jsonResponse) throws JSONException {
         JSONObject responseJson = new JSONObject(jsonResponse);
         
         FlashcardGroup group = new FlashcardGroup();

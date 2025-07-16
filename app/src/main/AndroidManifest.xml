@@ -66,6 +66,13 @@
             android:exported="false"
             android:theme="@style/Theme.QuizApp"
             android:parentActivityName=".MainActivity" />
+            
+        <!-- Create Flashcard Activity -->
+        <activity
+            android:name=".ui.activities.CreateFlashcardActivity"
+            android:exported="false"
+            android:theme="@style/Theme.QuizApp"
+            android:parentActivityName=".ui.activities.MyFlashcardsActivity" />
     </application>
 
 </manifest>

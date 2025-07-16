@@ -34,6 +34,7 @@ import app.quiz.R;
 import app.quiz.data.models.FlashcardGroup;
 import app.quiz.data.models.PagedResponse;
 import app.quiz.data.remote.FlashcardService;
+import app.quiz.ui.activities.CreateFlashcardActivity;
 import app.quiz.ui.adapters.FlashcardGroupAdapter;
 import app.quiz.utils.SessionManager;
 
@@ -45,6 +46,7 @@ public class MyFlashcardsActivity extends AppCompatActivity implements Flashcard
     
     private static final String TAG = "MyFlashcardsActivity";
     private static final int PAGE_SIZE = 20;
+    private static final int REQUEST_CREATE_FLASHCARD = 1001;
     
     // UI Components
     private Toolbar toolbar;
@@ -210,8 +212,8 @@ public class MyFlashcardsActivity extends AppCompatActivity implements Flashcard
     
     private void setupEmptyState() {
         btnCreateFlashcard.setOnClickListener(v -> {
-            // TODO: Navigate to create flashcard activity when implemented
-            Toast.makeText(this, "Create flashcard feature coming soon!", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, CreateFlashcardActivity.class);
+            startActivityForResult(intent, REQUEST_CREATE_FLASHCARD);
         });
     }
     
@@ -383,6 +385,21 @@ public class MyFlashcardsActivity extends AppCompatActivity implements Flashcard
             currentPage = 1;
             hasMorePages = true;
             loadMyFlashcards(true);
+        }
+    }
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        
+        if (requestCode == REQUEST_CREATE_FLASHCARD && resultCode == RESULT_OK) {
+            // Refresh the flashcard list after creating a new one
+            currentPage = 1;
+            hasMorePages = true;
+            loadMyFlashcards(true);
+            
+            // Show success message
+            Toast.makeText(this, "Flashcard created successfully!", Toast.LENGTH_SHORT).show();
         }
     }
 }
