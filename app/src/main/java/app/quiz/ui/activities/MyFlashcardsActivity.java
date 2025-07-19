@@ -59,6 +59,7 @@ public class MyFlashcardsActivity extends AppCompatActivity implements Flashcard
     private MaterialButton btnCreateFlashcard;
     private TextInputEditText searchEditText;
     private FloatingActionButton fabFilter;
+    private FloatingActionButton fabCreateFlashcard;
     private MaterialCardView filterCard;
     private ChipGroup chipGroupSort;
     private Chip chipRecent, chipAlphabetical, chipOldest;
@@ -105,6 +106,7 @@ public class MyFlashcardsActivity extends AppCompatActivity implements Flashcard
         setupSearch();
         setupFilter();
         setupEmptyState();
+        setupCreateFlashcardFab();
         
         // Load initial data
         loadMyFlashcards(true);
@@ -121,6 +123,7 @@ public class MyFlashcardsActivity extends AppCompatActivity implements Flashcard
         btnCreateFlashcard = findViewById(R.id.btn_create_flashcard);
         searchEditText = findViewById(R.id.et_search);
         fabFilter = findViewById(R.id.fab_filter);
+        fabCreateFlashcard = findViewById(R.id.fab_create_flashcard);
         filterCard = findViewById(R.id.card_filter);
         chipGroupSort = findViewById(R.id.chip_group_sort);
         chipRecent = findViewById(R.id.chip_recent);
@@ -212,6 +215,13 @@ public class MyFlashcardsActivity extends AppCompatActivity implements Flashcard
     
     private void setupEmptyState() {
         btnCreateFlashcard.setOnClickListener(v -> {
+            Intent intent = new Intent(this, CreateFlashcardActivity.class);
+            startActivityForResult(intent, REQUEST_CREATE_FLASHCARD);
+        });
+    }
+    
+    private void setupCreateFlashcardFab() {
+        fabCreateFlashcard.setOnClickListener(v -> {
             Intent intent = new Intent(this, CreateFlashcardActivity.class);
             startActivityForResult(intent, REQUEST_CREATE_FLASHCARD);
         });
