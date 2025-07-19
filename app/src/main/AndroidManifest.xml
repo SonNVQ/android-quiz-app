@@ -73,6 +73,12 @@
             android:exported="false"
             android:theme="@style/Theme.QuizApp"
             android:parentActivityName=".ui.activities.MyFlashcardsActivity" />
+        <!-- Fill In Blank Quiz Activity -->
+        <activity
+            android:name=".ui.activities.FillInBlankQuizActivity"
+            android:exported="false"
+            android:theme="@style/Theme.QuizApp"
+            android:parentActivityName=".ui.activities.FlashcardDetailActivity" />
     </application>
 
 </manifest>

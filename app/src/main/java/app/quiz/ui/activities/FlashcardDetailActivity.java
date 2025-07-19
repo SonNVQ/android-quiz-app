@@ -342,10 +342,20 @@ public class FlashcardDetailActivity extends AppCompatActivity {
         }
     }
     
+    private void startFillInBlankQuiz() {
+        if (flashcards == null || flashcards.size() < 3) {
+            Toast.makeText(this, "Need at least 3 flashcards to start quiz", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Intent intent = new Intent(this, FillInBlankQuizActivity.class);
+        intent.putExtra(FillInBlankQuizActivity.EXTRA_FLASHCARD_GROUP, flashcardGroup);
+        intent.putParcelableArrayListExtra(FillInBlankQuizActivity.EXTRA_FLASHCARDS, new ArrayList<>(flashcards));
+        startActivity(intent);
+    }
+
     private void setupButtonListeners() {
         btnStartQuiz.setOnClickListener(v -> {
-            // TODO: Implement quiz start functionality
-            Toast.makeText(this, "Quiz functionality coming soon!", Toast.LENGTH_SHORT).show();
+            startFillInBlankQuiz();
         });
         
         btnBackToList.setOnClickListener(v -> {
