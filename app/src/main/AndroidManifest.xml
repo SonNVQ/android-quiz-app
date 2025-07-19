@@ -80,6 +80,13 @@
             android:theme="@style/Theme.QuizApp"
             android:parentActivityName=".ui.activities.FlashcardDetailActivity" />
             
+        <!-- Multiple Choice Quiz Activity -->
+        <activity
+            android:name=".ui.activities.MultipleChoiceQuizActivity"
+            android:exported="false"
+            android:theme="@style/Theme.QuizApp"
+            android:parentActivityName=".ui.activities.FlashcardDetailActivity" />
+            
         <!-- Flashcard Test Setup Activity -->
         <activity
             android:name=".ui.activities.FlashcardTestSetupActivity"

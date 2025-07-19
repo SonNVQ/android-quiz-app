@@ -15,7 +15,7 @@ import java.util.UUID;
  */
 public class TestGenerator {
     private static final Random random = new Random();
-    private static final int MIN_FLASHCARDS_FOR_MULTIPLE_CHOICE = 4;
+    private static final int MIN_FLASHCARDS_FOR_MULTIPLE_CHOICE = 1;
     private static final int MULTIPLE_CHOICE_OPTIONS_COUNT = 4;
     
     /**
@@ -145,7 +145,7 @@ public class TestGenerator {
         List<TestQuestion> questions = new ArrayList<>();
         
         if (flashcards.size() < MIN_FLASHCARDS_FOR_MULTIPLE_CHOICE) {
-            return questions; // Not enough flashcards for multiple choice
+            return questions;
         }
         
         for (int i = 0; i < Math.min(count, flashcards.size()); i++) {
@@ -161,18 +161,20 @@ public class TestGenerator {
             if (askForDefinition) {
                 // Ask for definition given term
                 questionText = "What is the definition of '" + correctFlashcard.getTerm() + "'?";
+                int optionsCount = Math.min(MULTIPLE_CHOICE_OPTIONS_COUNT, flashcards.size());
                 options.add(correctFlashcard.getDefinition());
                 
                 // Add wrong definitions
-                List<String> wrongDefinitions = getRandomWrongDefinitions(correctFlashcard, flashcards, MULTIPLE_CHOICE_OPTIONS_COUNT - 1);
+                List<String> wrongDefinitions = getRandomWrongDefinitions(correctFlashcard, flashcards, optionsCount - 1);
                 options.addAll(wrongDefinitions);
             } else {
                 // Ask for term given definition
                 questionText = "Which term matches this definition: '" + correctFlashcard.getDefinition() + "'?";
+                int optionsCount = Math.min(MULTIPLE_CHOICE_OPTIONS_COUNT, flashcards.size());
                 options.add(correctFlashcard.getTerm());
                 
                 // Add wrong terms
-                List<String> wrongTerms = getRandomWrongTerms(correctFlashcard, flashcards, MULTIPLE_CHOICE_OPTIONS_COUNT - 1);
+                List<String> wrongTerms = getRandomWrongTerms(correctFlashcard, flashcards, optionsCount - 1);
                 options.addAll(wrongTerms);
             }
             
@@ -238,10 +240,7 @@ public class TestGenerator {
             wrongDefinitions.add(otherFlashcards.get(i).getDefinition());
         }
         
-        // Fill remaining slots with generic wrong answers if needed
-        while (wrongDefinitions.size() < count) {
-            wrongDefinitions.add("This is not the correct definition " + (wrongDefinitions.size() + 1));
-        }
+        
         
         return wrongDefinitions;
     }
@@ -265,10 +264,7 @@ public class TestGenerator {
             wrongTerms.add(otherFlashcards.get(i).getTerm());
         }
         
-        // Fill remaining slots with generic wrong answers if needed
-        while (wrongTerms.size() < count) {
-            wrongTerms.add("Wrong term " + (wrongTerms.size() + 1));
-        }
+        
         
         return wrongTerms;
     }

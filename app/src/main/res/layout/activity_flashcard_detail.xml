@@ -139,9 +139,21 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:layout_marginEnd="8dp"
+                                android:layout_marginEnd="4dp"
                                 android:text="Start Quiz"
                                 app:icon="@drawable/ic_play_arrow"
+                                app:iconGravity="start"
+                                style="@style/Widget.Material3.Button" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_multiple_choice"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="4dp"
+                                android:layout_marginEnd="4dp"
+                                android:text="Multiple Choice"
+                                app:icon="@drawable/ic_cards"
                                 app:iconGravity="start"
                                 style="@style/Widget.Material3.Button" />
 
@@ -150,7 +162,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:layout_marginStart="8dp"
+                                android:layout_marginStart="4dp"
                                 android:text="Fill in Blank"
                                 app:icon="@drawable/ic_edit"
                                 app:iconGravity="start"

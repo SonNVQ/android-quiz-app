@@ -162,7 +162,7 @@ public class FlashcardTestSetupActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 // Ensure minimum value of 5
-                selectedQuestionCount = Math.max(5, progress);
+                selectedQuestionCount = Math.max(1, progress);
                 if (selectedQuestionCount != progress) {
                     seekBar.setProgress(selectedQuestionCount);
                 }
@@ -197,7 +197,7 @@ public class FlashcardTestSetupActivity extends AppCompatActivity {
     private void updateQuestionCountLimits() {
         if (selectedGroup != null) {
             int maxQuestions = getMaxQuestionsForMode(selectedGroup, selectedTestMode);
-            seekBarQuestionCount.setMax(Math.max(5, maxQuestions));
+            seekBarQuestionCount.setMax(maxQuestions);
             updateQuestionCountDisplay();
         }
     }
@@ -208,7 +208,7 @@ public class FlashcardTestSetupActivity extends AppCompatActivity {
         switch (testMode) {
             case FlashcardTestActivity.TEST_MODE_MULTIPLE_CHOICE:
                 // Need at least 4 flashcards for each multiple choice question
-                return Math.min(flashcardCount, flashcardCount >= 4 ? flashcardCount : 0);
+                return flashcardCount >= 1 ? flashcardCount : 0;
             case FlashcardTestActivity.TEST_MODE_TRUE_FALSE:
             case FlashcardTestActivity.TEST_MODE_FILL_BLANK:
                 return flashcardCount;

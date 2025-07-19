@@ -22,6 +22,7 @@ import app.quiz.data.models.Flashcard;
 import app.quiz.data.remote.FlashcardService;
 import app.quiz.ui.activities.FlashcardListActivity;
 import app.quiz.ui.activities.FlashcardTestActivity;
+import app.quiz.ui.activities.MultipleChoiceQuizActivity;
 import app.quiz.ui.activities.FillInBlankQuizActivity;
 import app.quiz.ui.adapters.FlashcardSliderAdapter;
 import app.quiz.ui.adapters.FlashcardListAdapter;
@@ -46,6 +47,7 @@ public class FlashcardDetailActivity extends AppCompatActivity {
 
 
     private MaterialButton btnStartQuiz;
+    private MaterialButton btnMultipleChoice;
     private MaterialButton btnFillInBlank;
     private MaterialButton btnBackToList;
     
@@ -100,6 +102,7 @@ public class FlashcardDetailActivity extends AppCompatActivity {
         
         // Initialize Buttons
         btnStartQuiz = findViewById(R.id.btn_start_quiz);
+        btnMultipleChoice = findViewById(R.id.btn_multiple_choice);
         btnFillInBlank = findViewById(R.id.btn_fill_in_blank);
         btnBackToList = findViewById(R.id.btn_back_to_list);
         btnPreviousCard = findViewById(R.id.btn_previous);
@@ -358,6 +361,16 @@ public class FlashcardDetailActivity extends AppCompatActivity {
         startActivity(intent);
     }
     
+    private void startMultipleChoiceQuiz() {
+        if (flashcards == null || flashcards.size() < 1) {
+            Toast.makeText(this, "Need at least 1 flashcards for multiple choice quiz", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Intent intent = new Intent(this, MultipleChoiceQuizActivity.class);
+        intent.putParcelableArrayListExtra("flashcards", new ArrayList<>(flashcards));
+        startActivity(intent);
+    }
+    
     private void startFillInBlankQuiz() {
         if (flashcards == null || flashcards.isEmpty()) {
             Toast.makeText(this, "No flashcards available for fill-in-blank quiz", Toast.LENGTH_SHORT).show();
@@ -371,6 +384,10 @@ public class FlashcardDetailActivity extends AppCompatActivity {
     private void setupButtonListeners() {
         btnStartQuiz.setOnClickListener(v -> {
             startFlashcardTest();
+        });
+        
+        btnMultipleChoice.setOnClickListener(v -> {
+            startMultipleChoiceQuiz();
         });
         
         btnFillInBlank.setOnClickListener(v -> {
