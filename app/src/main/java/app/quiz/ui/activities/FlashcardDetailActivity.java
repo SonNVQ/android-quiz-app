@@ -49,7 +49,7 @@ public class FlashcardDetailActivity extends AppCompatActivity {
     private MaterialButton btnStartQuiz;
     private MaterialButton btnMultipleChoice;
     private MaterialButton btnFillInBlank;
-    private MaterialButton btnBackToList;
+//    private MaterialButton btnBackToList;
     
     // New UI components for flashcard content
     private ViewPager2 viewPagerCards;
@@ -104,7 +104,7 @@ public class FlashcardDetailActivity extends AppCompatActivity {
         btnStartQuiz = findViewById(R.id.btn_start_quiz);
         btnMultipleChoice = findViewById(R.id.btn_multiple_choice);
         btnFillInBlank = findViewById(R.id.btn_fill_in_blank);
-        btnBackToList = findViewById(R.id.btn_back_to_list);
+//        btnBackToList = findViewById(R.id.btn_back_to_list);
         btnPreviousCard = findViewById(R.id.btn_previous);
         btnNextCard = findViewById(R.id.btn_next);
         
@@ -394,13 +394,13 @@ public class FlashcardDetailActivity extends AppCompatActivity {
             startFillInBlankQuiz();
         });
         
-        btnBackToList.setOnClickListener(v -> {
-            // Navigate back to flashcard list
-            Intent intent = new Intent(this, FlashcardListActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            finish();
-        });
+//        btnBackToList.setOnClickListener(v -> {
+//            // Navigate back to flashcard list
+//            Intent intent = new Intent(this, FlashcardListActivity.class);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//            startActivity(intent);
+//            finish();
+//        });
         
         // Navigation button listeners
         btnPreviousCard.setOnClickListener(v -> {
