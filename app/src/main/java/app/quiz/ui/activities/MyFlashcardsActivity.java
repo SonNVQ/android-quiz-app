@@ -374,7 +374,7 @@ public class MyFlashcardsActivity extends AppCompatActivity implements Flashcard
     @Override
     public void onFlashcardGroupClick(FlashcardGroup flashcardGroup) {
         Intent intent = new Intent(this, FlashcardDetailActivity.class);
-        intent.putExtra("flashcard_group", flashcardGroup);
+        intent.putExtra("extra_flashcard_group", flashcardGroup);
         startActivity(intent);
     }
     
