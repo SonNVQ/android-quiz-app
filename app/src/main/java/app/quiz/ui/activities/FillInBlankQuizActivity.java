@@ -73,13 +73,15 @@ public class FillInBlankQuizActivity extends AppCompatActivity {
         skippedQuestions = new ArrayList<>();
         startTime = System.currentTimeMillis();
 
-        // Get data from intent
+        // Get flashcards from intent
         flashcards = getIntent().getParcelableArrayListExtra(EXTRA_FLASHCARDS);
+        
         if (flashcards == null || flashcards.isEmpty()) {
             Toast.makeText(this, "No flashcards available", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
+        
         Collections.shuffle(flashcards);
 
         // Set up button listeners
@@ -124,14 +126,21 @@ public class FillInBlankQuizActivity extends AppCompatActivity {
         String sentence = generateSentenceWithBlank(card);
         
         tvSentence.setText(sentence);
-        tvHint.setText("Hint: " + card.getDefinition());
+        
+        // Set hint with first few characters of the term
+        String hint = "Hint: " + card.getTerm().substring(0, Math.min(2, card.getTerm().length())) + "...";
+        tvHint.setText(hint);
+        
         tvQuestionCounter.setText("Question " + (currentQuestionIndex + 1) + "/" + flashcards.size());
+        
+        // Reset UI state
         etUserAnswer.setText("");
-        tvFeedback.setVisibility(View.GONE);
-        btnRetry.setVisibility(View.GONE);
-        btnSkip.setVisibility(View.VISIBLE);
+        etUserAnswer.setEnabled(true);
         btnSubmit.setVisibility(View.VISIBLE);
         btnSubmit.setEnabled(false);
+        btnRetry.setVisibility(View.GONE);
+        btnSkip.setVisibility(View.VISIBLE);
+        tvFeedback.setVisibility(View.GONE);
         isRetry = false;
         
         // Focus on input field

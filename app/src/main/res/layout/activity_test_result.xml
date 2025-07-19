@@ -352,6 +352,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
                     android:text="Retake Test"
+                    android:visibility="invisible"
                     app:icon="@drawable/ic_refresh" />
 
                 <com.google.android.material.button.MaterialButton
@@ -361,6 +362,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
                     android:text="Review Flashcards"
+                    android:visibility="invisible"
                     app:icon="@drawable/ic_book" />
 
                 <com.google.android.material.button.MaterialButton
@@ -369,6 +371,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Back to Home"
+                    android:visibility="invisible"
                     app:icon="@drawable/ic_home" />
 
             </LinearLayout>
