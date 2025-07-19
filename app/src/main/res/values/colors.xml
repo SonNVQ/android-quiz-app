@@ -104,6 +104,23 @@
     <color name="button_disabled">#E0E0E0</color>
     <color name="button_text_disabled">#9E9E9E</color>
     
+    <!-- Chip Colors -->
+    <color name="chip_background">#E3F2FD</color>
+    <color name="chip_stroke">#BBDEFB</color>
+    
+    <!-- Additional Text Colors -->
+    <color name="primary_text_color">@color/text_primary</color>
+    <color name="secondary_text_color">@color/text_secondary</color>
+
+    <!-- Divider color -->
+    <color name="divider_color">@color/divider</color>
+
+    <!-- Material Design 3 colors -->
+    <color name="surface_variant">#F3F3F3</color>
+    <color name="outline">#79747E</color>
+    <color name="hint_text_color">#6B5B00</color>
+    <color name="warning_light">#FFF3E0</color>
+    
     <!-- Color Aliases for Layout Compatibility -->
     <color name="primary_color">@color/primary</color>
     <color name="error_color">@color/error</color>

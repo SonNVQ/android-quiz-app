@@ -79,6 +79,27 @@
             android:exported="false"
             android:theme="@style/Theme.QuizApp"
             android:parentActivityName=".ui.activities.FlashcardDetailActivity" />
+            
+        <!-- Flashcard Test Setup Activity -->
+        <activity
+            android:name=".ui.activities.FlashcardTestSetupActivity"
+            android:exported="false"
+            android:theme="@style/Theme.QuizApp"
+            android:parentActivityName=".MainActivity" />
+            
+        <!-- Flashcard Test Activity -->
+        <activity
+            android:name=".ui.activities.FlashcardTestActivity"
+            android:exported="false"
+            android:theme="@style/Theme.QuizApp"
+            android:parentActivityName=".ui.activities.FlashcardTestSetupActivity" />
+            
+        <!-- Test Result Activity -->
+        <activity
+            android:name=".ui.activities.TestResultActivity"
+            android:exported="false"
+            android:theme="@style/Theme.QuizApp"
+            android:parentActivityName=".ui.activities.FlashcardTestActivity" />
     </application>
 
 </manifest>

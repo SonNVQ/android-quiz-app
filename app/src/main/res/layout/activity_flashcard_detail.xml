@@ -124,27 +124,46 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="16dp"
-                        android:gravity="center">
+                        android:orientation="vertical"
+                        android:layout_marginTop="16dp">
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btn_start_quiz"
-                            android:layout_width="0dp"
+                        <!-- First row of buttons -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginEnd="8dp"
-                            android:text="Start Quiz"
-                            app:icon="@drawable/ic_play_arrow"
-                            app:iconGravity="start"
-                            style="@style/Widget.Material3.Button" />
+                            android:orientation="horizontal"
+                            android:gravity="center">
 
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_start_quiz"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginEnd="8dp"
+                                android:text="Start Quiz"
+                                app:icon="@drawable/ic_play_arrow"
+                                app:iconGravity="start"
+                                style="@style/Widget.Material3.Button" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_fill_in_blank"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="8dp"
+                                android:text="Fill in Blank"
+                                app:icon="@drawable/ic_edit"
+                                app:iconGravity="start"
+                                style="@style/Widget.Material3.Button" />
+
+                        </LinearLayout>
+
+                        <!-- Second row - Back button -->
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btn_back_to_list"
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
                             android:text="Back to List"
                             app:icon="@drawable/ic_arrow_back"
                             app:iconGravity="start"

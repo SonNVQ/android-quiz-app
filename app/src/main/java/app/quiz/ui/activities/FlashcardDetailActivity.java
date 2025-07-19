@@ -21,6 +21,8 @@ import app.quiz.data.models.FlashcardGroup;
 import app.quiz.data.models.Flashcard;
 import app.quiz.data.remote.FlashcardService;
 import app.quiz.ui.activities.FlashcardListActivity;
+import app.quiz.ui.activities.FlashcardTestActivity;
+import app.quiz.ui.activities.FillInBlankQuizActivity;
 import app.quiz.ui.adapters.FlashcardSliderAdapter;
 import app.quiz.ui.adapters.FlashcardListAdapter;
 
@@ -44,6 +46,7 @@ public class FlashcardDetailActivity extends AppCompatActivity {
 
 
     private MaterialButton btnStartQuiz;
+    private MaterialButton btnFillInBlank;
     private MaterialButton btnBackToList;
     
     // New UI components for flashcard content
@@ -97,6 +100,7 @@ public class FlashcardDetailActivity extends AppCompatActivity {
         
         // Initialize Buttons
         btnStartQuiz = findViewById(R.id.btn_start_quiz);
+        btnFillInBlank = findViewById(R.id.btn_fill_in_blank);
         btnBackToList = findViewById(R.id.btn_back_to_list);
         btnPreviousCard = findViewById(R.id.btn_previous);
         btnNextCard = findViewById(R.id.btn_next);
@@ -342,19 +346,34 @@ public class FlashcardDetailActivity extends AppCompatActivity {
         }
     }
     
-    private void startFillInBlankQuiz() {
+    private void startFlashcardTest() {
         if (flashcards == null || flashcards.size() < 3) {
-            Toast.makeText(this, "Need at least 3 flashcards to start quiz", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Need at least 3 flashcards to start test", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Intent intent = new Intent(this, FlashcardTestActivity.class);
+        intent.putExtra(FlashcardTestActivity.EXTRA_FLASHCARD_GROUP, flashcardGroup);
+        intent.putExtra(FlashcardTestActivity.EXTRA_QUESTION_COUNT, Math.min(10, flashcards.size()));
+        intent.putExtra(FlashcardTestActivity.EXTRA_TEST_MODE, FlashcardTestActivity.TEST_MODE_MIXED);
+        startActivity(intent);
+    }
+    
+    private void startFillInBlankQuiz() {
+        if (flashcards == null || flashcards.isEmpty()) {
+            Toast.makeText(this, "No flashcards available for fill-in-blank quiz", Toast.LENGTH_SHORT).show();
             return;
         }
         Intent intent = new Intent(this, FillInBlankQuizActivity.class);
-        intent.putExtra(FillInBlankQuizActivity.EXTRA_FLASHCARD_GROUP, flashcardGroup);
         intent.putParcelableArrayListExtra(FillInBlankQuizActivity.EXTRA_FLASHCARDS, new ArrayList<>(flashcards));
         startActivity(intent);
     }
 
     private void setupButtonListeners() {
         btnStartQuiz.setOnClickListener(v -> {
+            startFlashcardTest();
+        });
+        
+        btnFillInBlank.setOnClickListener(v -> {
             startFillInBlankQuiz();
         });
         
