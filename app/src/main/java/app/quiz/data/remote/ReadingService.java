@@ -20,6 +20,7 @@ import java.util.concurrent.Executors;
 
 import app.quiz.data.models.PagedResponse;
 import app.quiz.data.models.Reading;
+import app.quiz.data.models.ReadingQuestion;
 
 public class ReadingService {
     private static final String TAG = "ReadingService";
@@ -196,9 +197,46 @@ public class ReadingService {
         reading.setId(itemJson.optString("id"));
         reading.setTitle(itemJson.optString("title"));
         reading.setDescription(itemJson.optString("description"));
+        reading.setContent(itemJson.optString("content"));
         reading.setImageUrl(itemJson.optString("imageUrl"));
-        // Add more parsing as needed
+        reading.setUserId(itemJson.optString("userId"));
+        
+        // Parse questions
+        JSONArray questionsArray = itemJson.optJSONArray("questions");
+        if (questionsArray != null) {
+            List<ReadingQuestion> questions = new ArrayList<>();
+            for (int i = 0; i < questionsArray.length(); i++) {
+                JSONObject questionJson = questionsArray.getJSONObject(i);
+                ReadingQuestion question = parseReadingQuestion(questionJson);
+                questions.add(question);
+            }
+            reading.setQuestions(questions);
+        }
+        
         return reading;
+    }
+    
+    private ReadingQuestion parseReadingQuestion(JSONObject questionJson) throws JSONException {
+        ReadingQuestion question = new ReadingQuestion();
+        question.setId(questionJson.optString("id"));
+        question.setQuestionText(questionJson.optString("questionText"));
+        question.setQuestionType(questionJson.optInt("questionType"));
+        
+        // Parse single choice options
+        if (question.getQuestionType() == ReadingQuestion.TYPE_SINGLE_CHOICE) {
+            question.setOptionA(questionJson.optString("optionA"));
+            question.setOptionB(questionJson.optString("optionB"));
+            question.setOptionC(questionJson.optString("optionC"));
+            question.setOptionD(questionJson.optString("optionD"));
+            question.setCorrectOption(questionJson.optString("correctOption"));
+        }
+        
+        // Parse fill in the blank answer
+        if (question.getQuestionType() == ReadingQuestion.TYPE_FILL_IN_BLANK) {
+            question.setAnswer(questionJson.optString("answer"));
+        }
+        
+        return question;
     }
 
     public static class ApiException extends Exception {

@@ -1,5 +1,6 @@
 package app.quiz.ui.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -13,9 +14,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.button.MaterialButton;
+
+import java.util.ArrayList;
 
 import app.quiz.R;
 import app.quiz.data.models.Reading;
+import app.quiz.data.models.ReadingQuestion;
 import app.quiz.data.remote.ReadingService;
 
 public class ReadingDetailActivity extends AppCompatActivity {
@@ -26,8 +31,10 @@ public class ReadingDetailActivity extends AppCompatActivity {
     // UI Components
     private TextView tvTitle;
     private TextView tvDescription;
+    private TextView tvContent;
     private ImageView ivImage;
     private ProgressBar progressBar;
+    private MaterialButton btnTakeTest;
 
     private ReadingService readingService;
     private String readingId;
@@ -55,8 +62,10 @@ public class ReadingDetailActivity extends AppCompatActivity {
         // Initialize UI components
         tvTitle = findViewById(R.id.tv_title);
         tvDescription = findViewById(R.id.tv_description);
+        tvContent = findViewById(R.id.tv_content);
         ivImage = findViewById(R.id.iv_image);
         progressBar = findViewById(R.id.progress_bar);
+        btnTakeTest = findViewById(R.id.btn_take_test);
 
         // Get reading ID from intent
         readingId = getIntent().getStringExtra(EXTRA_READING_ID);
@@ -91,6 +100,7 @@ public class ReadingDetailActivity extends AppCompatActivity {
     private void displayReading(Reading reading) {
         tvTitle.setText(reading.getTitle());
         tvDescription.setText(reading.getDescription());
+        tvContent.setText(reading.getContent());
 
         if (reading.getImageUrl() != null && !reading.getImageUrl().isEmpty()) {
             Glide.with(this)
@@ -99,6 +109,28 @@ public class ReadingDetailActivity extends AppCompatActivity {
         } else {
             ivImage.setVisibility(View.GONE);
         }
+        
+        // Setup test button
+        if (reading.getQuestions() != null && !reading.getQuestions().isEmpty()) {
+            btnTakeTest.setVisibility(View.VISIBLE);
+            btnTakeTest.setOnClickListener(v -> startReadingTest(reading));
+        } else {
+            btnTakeTest.setVisibility(View.GONE);
+        }
+    }
+    
+    private void startReadingTest(Reading reading) {
+        if (reading.getQuestions() == null || reading.getQuestions().isEmpty()) {
+            Toast.makeText(this, "No test available for this reading", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        Intent intent = new Intent(this, ReadingTestActivity.class);
+        intent.putExtra(ReadingTestActivity.EXTRA_READING_ID, reading.getId());
+        intent.putExtra(ReadingTestActivity.EXTRA_READING_TITLE, reading.getTitle());
+        intent.putParcelableArrayListExtra(ReadingTestActivity.EXTRA_QUESTIONS, 
+                new ArrayList<>(reading.getQuestions()));
+        startActivity(intent);
     }
 
     @Override

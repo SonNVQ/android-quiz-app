@@ -3,16 +3,20 @@ package app.quiz.data.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Reading implements Parcelable {
     private String id;
     private String title;
     private String description;
+    private String content;
     private String imageUrl;
+    private String userId;
+    private List<ReadingQuestion> questions;
     private Date createdAt;
     private Date updatedAt;
-    // Add more fields if needed based on API
 
     public Reading() {}
 
@@ -20,7 +24,10 @@ public class Reading implements Parcelable {
         id = in.readString();
         title = in.readString();
         description = in.readString();
+        content = in.readString();
         imageUrl = in.readString();
+        userId = in.readString();
+        questions = in.createTypedArrayList(ReadingQuestion.CREATOR);
         long tmpCreatedAt = in.readLong();
         createdAt = tmpCreatedAt == -1 ? null : new Date(tmpCreatedAt);
         long tmpUpdatedAt = in.readLong();
@@ -46,8 +53,14 @@ public class Reading implements Parcelable {
     public void setTitle(String title) { this.title = title; }
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+    public String getContent() { return content; }
+    public void setContent(String content) { this.content = content; }
     public String getImageUrl() { return imageUrl; }
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
+    public List<ReadingQuestion> getQuestions() { return questions; }
+    public void setQuestions(List<ReadingQuestion> questions) { this.questions = questions; }
     public Date getCreatedAt() { return createdAt; }
     public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
     public Date getUpdatedAt() { return updatedAt; }
@@ -63,7 +76,10 @@ public class Reading implements Parcelable {
         dest.writeString(id);
         dest.writeString(title);
         dest.writeString(description);
+        dest.writeString(content);
         dest.writeString(imageUrl);
+        dest.writeString(userId);
+        dest.writeTypedList(questions);
         dest.writeLong(createdAt != null ? createdAt.getTime() : -1);
         dest.writeLong(updatedAt != null ? updatedAt.getTime() : -1);
     }

@@ -116,10 +116,21 @@
     <string name="connection_error">Connection error. Please try again later.</string>
 
 
-    <!-- Reading Strings -->
+    <!-- Reading feature strings -->
     <string name="practice_reading">Practice Reading</string>
-    <string name="search_readings">Search Readings</string>
+    <string name="search_readings">Search readings...</string>
     <string name="no_readings_available">No readings available</string>
-    <string name="no_readings_message">No practice readings available at the moment. Please check back later.</string>
-    <string name="view_reading_action">View reading</string>
+    <string name="no_readings_message">There are no reading materials available at the moment. Please check back later.</string>
+    <string name="view_reading_action">View Reading</string>
+    <string name="take_test">Take Test</string>
+    <string name="reading_test">Reading Test</string>
+    <string name="question_counter">Question %1$d of %2$d</string>
+    <string name="submit_answer">Submit Answer</string>
+    <string name="next_question">Next Question</string>
+    <string name="finish_test">Finish Test</string>
+    <string name="test_completed">Test Completed!</string>
+    <string name="your_score">Your Score: %1$d/%2$d</string>
+    <string name="correct_answer">Correct!</string>
+    <string name="incorrect_answer">Incorrect. The correct answer is: %1$s</string>
+    <string name="fill_in_answer_hint">Type your answer here...</string>
 </resources>
