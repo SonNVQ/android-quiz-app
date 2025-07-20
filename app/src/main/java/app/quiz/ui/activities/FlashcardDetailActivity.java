@@ -7,6 +7,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+import app.quiz.utils.SessionManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -16,6 +17,8 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.button.MaterialButton;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import app.quiz.R;
 import app.quiz.data.models.FlashcardGroup;
 import app.quiz.data.models.Flashcard;
@@ -40,6 +43,7 @@ import java.util.Locale;
 public class FlashcardDetailActivity extends AppCompatActivity {
     private static final String TAG = "FlashcardDetailActivity";
     public static final String EXTRA_FLASHCARD_GROUP = "extra_flashcard_group";
+    private static final int REQUEST_EDIT_FLASHCARD = 1002;
     
     private FlashcardGroup flashcardGroup;
     private TextView tvTitle;
@@ -66,6 +70,7 @@ public class FlashcardDetailActivity extends AppCompatActivity {
     private List<Flashcard> flashcards;
     private int currentCardPosition = 0;
     private FlashcardService flashcardService;
+    private boolean isOwned = false;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +79,7 @@ public class FlashcardDetailActivity extends AppCompatActivity {
         
         initializeComponents();
         getIntentData();
+        isOwned = getIntent().getBooleanExtra("is_owned", false);
         setupUI();
     }
     
@@ -424,5 +430,83 @@ public class FlashcardDetailActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+    
+    @Override
+    public boolean onCreateOptionsMenu(android.view.Menu menu) {
+        if (isOwned) {
+            getMenuInflater().inflate(R.menu.menu_flashcard_detail, menu);
+            return true;
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_edit) {
+            Intent intent = new Intent(this, CreateFlashcardActivity.class);
+            intent.putExtra("flashcard_group", flashcardGroup);
+            intent.putExtra("is_edit", true);
+            startActivityForResult(intent, REQUEST_EDIT_FLASHCARD);
+            return true;
+        } else if (id == R.id.action_delete) {
+            showDeleteConfirmation();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    
+    private void showDeleteConfirmation() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Delete Flashcard Group");
+        builder.setMessage("Are you sure you want to delete this flashcard group?");
+        builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteFlashcardGroup();
+            }
+        });
+        builder.setNegativeButton("Cancel", null);
+        builder.show();
+    }
+    
+    private void deleteFlashcardGroup() {
+        String authToken = SessionManager.getInstance(this).getAuthToken();
+        if (authToken == null || authToken.isEmpty()) {
+            Toast.makeText(this, "Please log in to delete flashcards", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        flashcardService.deleteFlashcard(authToken, flashcardGroup.getId(), new FlashcardService.FlashcardCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                runOnUiThread(() -> {
+                    Toast.makeText(FlashcardDetailActivity.this, "Flashcard deleted successfully", Toast.LENGTH_SHORT).show();
+                    setResult(RESULT_OK);
+                    finish();
+                });
+            }
+            
+            @Override
+            public void onError(String error, int statusCode) {
+                runOnUiThread(() -> {
+                    Toast.makeText(FlashcardDetailActivity.this, "Failed to delete: " + error, Toast.LENGTH_LONG).show();
+                });
+            }
+        });
+    }
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_EDIT_FLASHCARD && resultCode == RESULT_OK && data != null) {
+            FlashcardGroup updatedGroup = data.getParcelableExtra("updated_flashcard");
+            if (updatedGroup != null) {
+                flashcardGroup = updatedGroup;
+                flashcards = updatedGroup.getFlashcards();
+                setupUI();
+                setupAdaptersWithData();
+            }
+        }
     }
 }

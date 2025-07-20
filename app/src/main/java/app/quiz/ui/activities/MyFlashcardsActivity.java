@@ -43,10 +43,10 @@ import app.quiz.utils.SessionManager;
  * Allows users to view, search, and filter their created flashcard sets
  */
 public class MyFlashcardsActivity extends AppCompatActivity implements FlashcardGroupAdapter.OnFlashcardGroupClickListener {
-    
     private static final String TAG = "MyFlashcardsActivity";
     private static final int PAGE_SIZE = 20;
     private static final int REQUEST_CREATE_FLASHCARD = 1001;
+    private static final int REQUEST_FLASHCARD_DETAIL = 1002;
     
     // UI Components
     private Toolbar toolbar;
@@ -375,7 +375,8 @@ public class MyFlashcardsActivity extends AppCompatActivity implements Flashcard
     public void onFlashcardGroupClick(FlashcardGroup flashcardGroup) {
         Intent intent = new Intent(this, FlashcardDetailActivity.class);
         intent.putExtra("extra_flashcard_group", flashcardGroup);
-        startActivity(intent);
+        intent.putExtra("is_owned", true);
+        startActivityForResult(intent, REQUEST_FLASHCARD_DETAIL);
     }
     
     @Override
@@ -402,14 +403,17 @@ public class MyFlashcardsActivity extends AppCompatActivity implements Flashcard
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         
-        if (requestCode == REQUEST_CREATE_FLASHCARD && resultCode == RESULT_OK) {
-            // Refresh the flashcard list after creating a new one
-            currentPage = 1;
-            hasMorePages = true;
-            loadMyFlashcards(true);
-            
-            // Show success message
-            Toast.makeText(this, "Flashcard created successfully!", Toast.LENGTH_SHORT).show();
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_CREATE_FLASHCARD || requestCode == REQUEST_FLASHCARD_DETAIL) {
+                // Refresh the flashcard list after creating, editing, or deleting
+                currentPage = 1;
+                hasMorePages = true;
+                loadMyFlashcards(true);
+                
+                if (requestCode == REQUEST_CREATE_FLASHCARD) {
+                    Toast.makeText(this, "Flashcard created successfully!", Toast.LENGTH_SHORT).show();
+                }
+            }
         }
     }
 }

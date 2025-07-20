@@ -131,9 +131,9 @@ public class FlashcardService {
                 
                 // Build request body
                 JSONObject requestBody = new JSONObject();
-                requestBody.put("name", name.trim());
-                requestBody.put("description", description != null ? description.trim() : "");
-                requestBody.put("isPublic", isPublic);
+                requestBody.put("Name", name.trim());
+                requestBody.put("Description", description != null ? description.trim() : "");
+                requestBody.put("IsPublic", isPublic);
                 
                 JSONArray flashcardsArray = new JSONArray();
                 for (Flashcard flashcard : flashcards) {
@@ -144,11 +144,11 @@ public class FlashcardService {
                     }
                     
                     JSONObject flashcardJson = new JSONObject();
-                    flashcardJson.put("term", flashcard.getTerm().trim());
-                    flashcardJson.put("definition", flashcard.getDefinition().trim());
+                    flashcardJson.put("Term", flashcard.getTerm().trim());
+                    flashcardJson.put("Definition", flashcard.getDefinition().trim());
                     flashcardsArray.put(flashcardJson);
                 }
-                requestBody.put("flashcards", flashcardsArray);
+                requestBody.put("Flashcards", flashcardsArray);
                 
                 String response = makePostRequest(FLASHCARD_DETAIL_ENDPOINT, requestBody.toString(), authToken);
                 FlashcardGroup createdGroup = parseFlashcardGroupResponse(response);
@@ -224,6 +224,114 @@ public class FlashcardService {
                 callback.onError(e.getMessage(), e.getStatusCode());
             } catch (Exception e) {
                 Log.e(TAG, "Get flashcard details unexpected error: " + e.getMessage());
+                callback.onError("Network error occurred", -1);
+            }
+        });
+    }
+
+    /**
+     * Update an existing flashcard group
+     * 
+     * @param authToken User authentication token
+     * @param groupId Flashcard group ID
+     * @param name Updated flashcard group name
+     * @param description Updated flashcard group description (optional)
+     * @param isPublic Whether the flashcard group is public
+     * @param flashcards Updated list of flashcards
+     * @param callback Response callback
+     */
+    public void updateFlashcard(String authToken, String groupId, String name, String description, boolean isPublic,
+                               List<Flashcard> flashcards, FlashcardCallback<FlashcardGroup> callback) {
+        executorService.execute(() -> {
+            try {
+                // Validate input
+                if (authToken == null || authToken.trim().isEmpty()) {
+                    callback.onError("Authentication required", 401);
+                    return;
+                }
+                
+                if (groupId == null || groupId.trim().isEmpty()) {
+                    callback.onError("Flashcard group ID is required", 400);
+                    return;
+                }
+                
+                if (name == null || name.trim().isEmpty()) {
+                    callback.onError("Flashcard title is required", 400);
+                    return;
+                }
+                
+                if (flashcards == null || flashcards.isEmpty()) {
+                    callback.onError("At least one flashcard is required", 400);
+                    return;
+                }
+                
+                // Build request body
+                JSONObject requestBody = new JSONObject();
+                requestBody.put("Name", name.trim());
+                requestBody.put("Description", description != null ? description.trim() : "");
+                requestBody.put("IsPublic", isPublic);
+                requestBody.put("Id", groupId);
+                
+                JSONArray flashcardsArray = new JSONArray();
+                for (Flashcard flashcard : flashcards) {
+                    if (flashcard.getTerm() == null || flashcard.getTerm().trim().isEmpty() ||
+                        flashcard.getDefinition() == null || flashcard.getDefinition().trim().isEmpty()) {
+                        callback.onError("All flashcard terms and definitions are required", 400);
+                        return;
+                    }
+                    
+                    JSONObject flashcardJson = new JSONObject();
+                    flashcardJson.put("Term", flashcard.getTerm().trim());
+                    flashcardJson.put("Definition", flashcard.getDefinition().trim());
+                    flashcardsArray.put(flashcardJson);
+                }
+                requestBody.put("Flashcards", flashcardsArray);
+                
+                String endpoint = FLASHCARD_DETAIL_ENDPOINT;
+                String response = makeRequest(endpoint, "PUT", authToken, requestBody.toString());
+                FlashcardGroup updatedGroup = parseFlashcardGroupResponse(response);
+                callback.onSuccess(updatedGroup);
+                
+            } catch (ApiException e) {
+                Log.e(TAG, "Update flashcard API error: " + e.getMessage());
+                callback.onError(e.getMessage(), e.getStatusCode());
+            } catch (Exception e) {
+                Log.e(TAG, "Update flashcard unexpected error: " + e.getMessage());
+                callback.onError("Network error occurred", -1);
+            }
+        });
+    }
+
+    /**
+     * Delete a flashcard group
+     * 
+     * @param authToken User authentication token
+     * @param groupId Flashcard group ID
+     * @param callback Response callback (Void on success)
+     */
+    public void deleteFlashcard(String authToken, String groupId, FlashcardCallback<Void> callback) {
+        executorService.execute(() -> {
+            try {
+                // Validate input
+                if (authToken == null || authToken.trim().isEmpty()) {
+                    callback.onError("Authentication required", 401);
+                    return;
+                }
+                
+                if (groupId == null || groupId.trim().isEmpty()) {
+                    callback.onError("Flashcard group ID is required", 400);
+                    return;
+                }
+                
+                String endpoint = FLASHCARD_DETAIL_ENDPOINT + "/" + groupId;
+                makeRequest(endpoint, "DELETE", authToken, null);
+                callback.onSuccess(null);
+                
+            } catch (ApiException e) {
+                Log.e(TAG, "Delete flashcard API error: " + e.getMessage());
+                callback.onError(e.getMessage(), e.getStatusCode());
+            } catch (Exception e) {
+                Log.e(TAG, "Delete flashcard unexpected error: " + e.getMessage());
                 callback.onError("Network error occurred", -1);
             }
         });

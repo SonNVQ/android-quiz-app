@@ -52,6 +52,8 @@ public class CreateFlashcardActivity extends AppCompatActivity {
     private FlashcardService flashcardService;
     private SessionManager sessionManager;
     private boolean isLoading = false;
+    private boolean isEditMode = false;
+    private FlashcardGroup editingGroup;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,8 +65,10 @@ public class CreateFlashcardActivity extends AppCompatActivity {
         setupToolbar();
         setupListeners();
         
-        // Add initial flashcard
-        addFlashcardView();
+        checkEditMode();
+        if (!isEditMode) {
+            addFlashcardView();
+        }
     }
     
     private void initializeServices() {
@@ -114,17 +118,51 @@ public class CreateFlashcardActivity extends AppCompatActivity {
         });
     }
     
-    private void addFlashcardView() {
-        View flashcardView = LayoutInflater.from(this)
-                .inflate(R.layout.item_create_flashcard, llFlashcardsContainer, false);
+    private void checkEditMode() {
+        Intent intent = getIntent();
+        isEditMode = intent.getBooleanExtra("is_edit", false);
+        if (isEditMode) {
+            editingGroup = intent.getParcelableExtra("flashcard_group");
+            if (editingGroup != null) {
+                populateEditData();
+            } else {
+                Toast.makeText(this, "Invalid flashcard data", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        }
+    }
+    
+    private void populateEditData() {
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("Edit Flashcard");
+        }
+        etTitle.setText(editingGroup.getName());
+        etDescription.setText(editingGroup.getDescription());
+        switchPublic.setChecked(editingGroup.isPublic());
         
+        List<Flashcard> flashcards = editingGroup.getFlashcards();
+        if (flashcards != null && !flashcards.isEmpty()) {
+            for (Flashcard fc : flashcards) {
+                addFlashcardView(fc.getTerm(), fc.getDefinition());
+            }
+        } else {
+            addFlashcardView();
+        }
+    }
+    
+    private void addFlashcardView(String term, String definition) {
+        View flashcardView = LayoutInflater.from(this).inflate(R.layout.item_create_flashcard, llFlashcardsContainer, false);
         FlashcardItemView itemView = new FlashcardItemView(flashcardView, flashcardViews.size() + 1);
+        itemView.setData(term, definition);
         flashcardViews.add(itemView);
         llFlashcardsContainer.addView(flashcardView);
-        
         updateEmptyState();
         updateCardNumbers();
         validateForm();
+    }
+    // Overload for new empty view
+    private void addFlashcardView() {
+        addFlashcardView("", "");
     }
     
     private void removeFlashcardView(FlashcardItemView itemView) {
@@ -184,7 +222,6 @@ public class CreateFlashcardActivity extends AppCompatActivity {
     private void saveFlashcard() {
         if (isLoading) return;
         
-        // Validate form
         String title = etTitle.getText() != null ? etTitle.getText().toString().trim() : "";
         if (title.isEmpty()) {
             Toast.makeText(this, "Title is required", Toast.LENGTH_SHORT).show();
@@ -196,7 +233,6 @@ public class CreateFlashcardActivity extends AppCompatActivity {
             return;
         }
         
-        // Collect flashcard data
         List<Flashcard> flashcards = new ArrayList<>();
         for (FlashcardItemView itemView : flashcardViews) {
             if (!itemView.isValid()) {
@@ -206,65 +242,65 @@ public class CreateFlashcardActivity extends AppCompatActivity {
             flashcards.add(itemView.getFlashcard());
         }
         
-        // Get other form data
         String description = etDescription.getText() != null ? etDescription.getText().toString().trim() : "";
         boolean isPublic = switchPublic.isChecked();
         String authToken = sessionManager.getAuthToken();
         
         if (authToken == null || authToken.isEmpty()) {
-            Toast.makeText(this, "Please log in to create flashcards", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please log in to " + (isEditMode ? "edit" : "create") + " flashcards", Toast.LENGTH_SHORT).show();
             return;
         }
         
-        // Show loading
         setLoading(true);
         
-        // Create flashcard
-        flashcardService.createFlashcard(authToken, title, description, isPublic, flashcards,
-                new FlashcardService.FlashcardCallback<FlashcardGroup>() {
-                    @Override
-                    public void onSuccess(FlashcardGroup result) {
-                        runOnUiThread(() -> {
-                            setLoading(false);
-                            Toast.makeText(CreateFlashcardActivity.this, 
-                                    "Flashcard created successfully!", Toast.LENGTH_SHORT).show();
-                            
-                            // Return to previous activity with result
-                            Intent resultIntent = new Intent();
-                            resultIntent.putExtra("created_flashcard", result);
-                            setResult(RESULT_OK, resultIntent);
-                            finish();
-                        });
-                    }
-                    
-                    @Override
-                    public void onError(String error, int statusCode) {
-                        runOnUiThread(() -> {
-                            setLoading(false);
-                            String errorMessage = getErrorMessage(error, statusCode);
-                            Toast.makeText(CreateFlashcardActivity.this, errorMessage, Toast.LENGTH_LONG).show();
-                        });
-                    }
-                });
-    }
-    
-    private void setLoading(boolean loading) {
-        isLoading = loading;
-        loadingOverlay.setVisibility(loading ? View.VISIBLE : View.GONE);
-        fabSave.setEnabled(!loading && isFormValid());
-    }
-    
-    private boolean isFormValid() {
-        String title = etTitle.getText() != null ? etTitle.getText().toString().trim() : "";
-        if (title.isEmpty()) return false;
-        
-        if (flashcardViews.isEmpty()) return false;
-        
-        for (FlashcardItemView itemView : flashcardViews) {
-            if (!itemView.isValid()) return false;
+        if (isEditMode) {
+            flashcardService.updateFlashcard(authToken, editingGroup.getId(), title, description, isPublic, flashcards,
+                    new FlashcardService.FlashcardCallback<FlashcardGroup>() {
+                        @Override
+                        public void onSuccess(FlashcardGroup result) {
+                            handleSuccess(result);
+                        }
+                        
+                        @Override
+                        public void onError(String error, int statusCode) {
+                            handleError(error, statusCode);
+                        }
+                    });
+        } else {
+            flashcardService.createFlashcard(authToken, title, description, isPublic, flashcards,
+                    new FlashcardService.FlashcardCallback<FlashcardGroup>() {
+                        @Override
+                        public void onSuccess(FlashcardGroup result) {
+                            handleSuccess(result);
+                        }
+                        
+                        @Override
+                        public void onError(String error, int statusCode) {
+                            handleError(error, statusCode);
+                        }
+                    });
         }
-        
-        return true;
+    }
+    
+    private void handleSuccess(FlashcardGroup result) {
+        runOnUiThread(() -> {
+            setLoading(false);
+            Toast.makeText(CreateFlashcardActivity.this, 
+                    "Flashcard " + (isEditMode ? "updated" : "created") + " successfully!", Toast.LENGTH_SHORT).show();
+            
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("updated_flashcard", result);
+            setResult(RESULT_OK, resultIntent);
+            finish();
+        });
+    }
+    
+    private void handleError(String error, int statusCode) {
+        runOnUiThread(() -> {
+            setLoading(false);
+            String errorMessage = getErrorMessage(error, statusCode);
+            Toast.makeText(CreateFlashcardActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+        });
     }
     
     private String getErrorMessage(String error, int statusCode) {
@@ -278,6 +314,12 @@ public class CreateFlashcardActivity extends AppCompatActivity {
             default:
                 return error != null ? error : "An error occurred while creating the flashcard.";
         }
+    }
+    
+    private void setLoading(boolean loading) {
+        isLoading = loading;
+        loadingOverlay.setVisibility(loading ? View.VISIBLE : View.GONE);
+        fabSave.setEnabled(!loading);
     }
     
     /**
@@ -299,6 +341,11 @@ public class CreateFlashcardActivity extends AppCompatActivity {
             
             updateCardNumber(cardNumber);
             setupListeners();
+        }
+        
+        public void setData(String term, String definition) {
+            etTerm.setText(term);
+            etDefinition.setText(definition);
         }
         
         private void setupListeners() {
