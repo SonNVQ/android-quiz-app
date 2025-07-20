@@ -115,4 +115,11 @@
     <string name="error_loading_my_flashcards">Failed to load your flashcards. Please try again.</string>
     <string name="connection_error">Connection error. Please try again later.</string>
 
+
+    <!-- Reading Strings -->
+    <string name="practice_reading">Practice Reading</string>
+    <string name="search_readings">Search Readings</string>
+    <string name="no_readings_available">No readings available</string>
+    <string name="no_readings_message">No practice readings available at the moment. Please check back later.</string>
+    <string name="view_reading_action">View reading</string>
 </resources>

@@ -51,9 +51,13 @@
 
             <!-- Dashboard Cards -->
             <androidx.cardview.widget.CardView
+                android:id="@+id/card_reading_materials"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/spacing_medium"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
                 app:cardCornerRadius="@dimen/card_corner_radius"
                 app:cardElevation="@dimen/card_elevation">
 
@@ -63,13 +67,28 @@
                     android:orientation="vertical"
                     android:padding="@dimen/spacing_medium">
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Reading Materials"
-                        android:textColor="@color/text_primary"
-                        android:textSize="@dimen/text_size_medium"
-                        android:textStyle="bold" />
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Reading Materials"
+                            android:textColor="@color/text_primary"
+                            android:textSize="@dimen/text_size_medium"
+                            android:textStyle="bold" />
+
+                        <ImageView
+                            android:layout_width="@dimen/icon_size_small"
+                            android:layout_height="@dimen/icon_size_small"
+                            android:src="@drawable/ic_arrow_forward"
+                            android:contentDescription="Navigate to reading materials" />
+
+                    </LinearLayout>
 
                     <TextView
                         android:layout_width="match_parent"

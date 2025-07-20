@@ -22,6 +22,7 @@ import app.quiz.ui.activities.LoginActivity;
 import app.quiz.ui.activities.FlashcardListActivity;
 import app.quiz.ui.activities.MyFlashcardsActivity;
 import app.quiz.ui.activities.ProfileActivity;
+import app.quiz.ui.activities.ReadingListActivity;
 
 import app.quiz.utils.SessionManager;
 
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvWelcome;
     private CardView cardVocabularyTools;
     private CardView cardMyFlashcards;
+    private CardView cardReadingMaterials;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         tvWelcome = findViewById(R.id.tv_welcome);
         cardVocabularyTools = findViewById(R.id.card_vocabulary_tools);
         cardMyFlashcards = findViewById(R.id.card_my_flashcards);
+        cardReadingMaterials = findViewById(R.id.card_reading_materials);
         
         // Setup click listeners
         setupClickListeners();
@@ -83,6 +86,12 @@ public class MainActivity extends AppCompatActivity {
         // My Flashcards card click - Navigate to MyFlashcardsActivity
         cardMyFlashcards.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, MyFlashcardsActivity.class);
+            startActivity(intent);
+        });
+
+        // Reading Materials card click - Navigate to ReadingListActivity
+        cardReadingMaterials.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, ReadingListActivity.class);
             startActivity(intent);
         });
     }

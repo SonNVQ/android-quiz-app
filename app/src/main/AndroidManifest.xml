@@ -107,6 +107,20 @@
             android:exported="false"
             android:theme="@style/Theme.QuizApp"
             android:parentActivityName=".ui.activities.FlashcardTestActivity" />
+
+        <!-- Reading List Activity -->
+        <activity
+            android:name=".ui.activities.ReadingListActivity"
+            android:exported="false"
+            android:theme="@style/Theme.QuizApp"
+            android:parentActivityName=".MainActivity" />
+            
+        <!-- Reading Detail Activity -->
+        <activity
+            android:name=".ui.activities.ReadingDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.QuizApp"
+            android:parentActivityName=".ui.activities.ReadingListActivity" />
     </application>
 
 </manifest>
