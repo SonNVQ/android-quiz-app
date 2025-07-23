@@ -23,8 +23,10 @@ import app.quiz.ui.activities.FlashcardListActivity;
 import app.quiz.ui.activities.MyFlashcardsActivity;
 import app.quiz.ui.activities.ProfileActivity;
 import app.quiz.ui.activities.ReadingListActivity;
+import app.quiz.ui.activities.AdminReadingActivity;
 
 import app.quiz.utils.SessionManager;
+import app.quiz.data.models.User;
 
 /**
  * MainActivity - Main dashboard for authenticated users
@@ -139,6 +141,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
+        
+        // Show admin menu item only for admin users
+        MenuItem adminItem = menu.findItem(R.id.action_admin);
+        if (adminItem != null) {
+            User currentUser = sessionManager.getCurrentUser();
+            boolean isAdmin = currentUser != null && "Admin".equals(currentUser.getRole());
+            adminItem.setVisible(isAdmin);
+        }
+        
         return true;
     }
     
@@ -146,7 +157,10 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         
-        if (id == R.id.action_profile) {
+        if (id == R.id.action_admin) {
+            openAdminReadings();
+            return true;
+        } else if (id == R.id.action_profile) {
             openProfile();
             return true;
         } else if (id == R.id.action_logout) {
@@ -155,6 +169,15 @@ public class MainActivity extends AppCompatActivity {
         }
         
         return super.onOptionsItemSelected(item);
+    }
+    
+    /**
+     * Open admin readings activity
+     * Allows admin users to manage reading materials
+     */
+    private void openAdminReadings() {
+        Intent intent = new Intent(this, AdminReadingActivity.class);
+        startActivity(intent);
     }
     
     /**

@@ -20,7 +20,11 @@ import java.util.concurrent.Executors;
 
 import app.quiz.data.models.PagedResponse;
 import app.quiz.data.models.Reading;
+import app.quiz.data.models.ReadingCreateDTO;
 import app.quiz.data.models.ReadingQuestion;
+import app.quiz.data.models.ReadingUpdateDto;
+
+import java.io.OutputStream;
 
 public class ReadingService {
     private static final String TAG = "ReadingService";
@@ -95,6 +99,95 @@ public class ReadingService {
             } catch (Exception e) {
                 Log.e(TAG, "Get reading by id unexpected error: " + e.getMessage());
                 callback.onError("Network error occurred", -1);
+            }
+        });
+    }
+
+    // Create reading (Admin only)
+    public void createReading(String authToken, ReadingCreateDTO readingData, ReadingCallback<Reading> callback) {
+        executorService.execute(() -> {
+            try {
+                // Validate input
+                if (authToken == null || authToken.trim().isEmpty()) {
+                    callback.onError("Authentication token is required", 401);
+                    return;
+                }
+                
+                if (readingData == null || !readingData.isValid()) {
+                    callback.onError("Invalid reading data", 400);
+                    return;
+                }
+                
+                JSONObject requestBody = createReadingRequestBody(readingData);
+                String response = makeRequest(READING_DETAIL_ENDPOINT, "POST", authToken, requestBody.toString());
+                Reading reading = parseReadingResponse(response);
+                callback.onSuccess(reading);
+                
+            } catch (ApiException e) {
+                Log.e(TAG, "Create reading API error: " + e.getMessage());
+                callback.onError(e.getMessage(), e.getStatusCode());
+            } catch (Exception e) {
+                Log.e(TAG, "Create reading unexpected error: " + e.getMessage());
+                callback.onError("Failed to create reading: " + e.getMessage(), -1);
+            }
+        });
+    }
+    
+    // Update reading (Admin only)
+    public void updateReading(String authToken, ReadingUpdateDto readingData, ReadingCallback<Reading> callback) {
+        executorService.execute(() -> {
+            try {
+                // Validate input
+                if (authToken == null || authToken.trim().isEmpty()) {
+                    callback.onError("Authentication token is required", 401);
+                    return;
+                }
+                
+                if (readingData == null || !readingData.isValid()) {
+                    callback.onError("Invalid reading data", 400);
+                    return;
+                }
+                
+                JSONObject requestBody = createUpdateReadingRequestBody(readingData);
+                String response = makeRequest(READING_DETAIL_ENDPOINT, "PUT", authToken, requestBody.toString());
+                Reading reading = parseReadingResponse(response);
+                callback.onSuccess(reading);
+                
+            } catch (ApiException e) {
+                Log.e(TAG, "Update reading API error: " + e.getMessage());
+                callback.onError(e.getMessage(), e.getStatusCode());
+            } catch (Exception e) {
+                Log.e(TAG, "Update reading unexpected error: " + e.getMessage());
+                callback.onError("Failed to update reading: " + e.getMessage(), -1);
+            }
+        });
+    }
+    
+    // Delete reading (Admin only)
+    public void deleteReading(String authToken, String id, ReadingCallback<Void> callback) {
+        executorService.execute(() -> {
+            try {
+                // Validate input
+                if (authToken == null || authToken.trim().isEmpty()) {
+                    callback.onError("Authentication token is required", 401);
+                    return;
+                }
+                
+                if (id == null || id.trim().isEmpty()) {
+                    callback.onError("Reading ID is required", 400);
+                    return;
+                }
+                
+                String endpoint = READING_DETAIL_ENDPOINT + "/" + id;
+                makeRequest(endpoint, "DELETE", authToken, null);
+                callback.onSuccess(null);
+                
+            } catch (ApiException e) {
+                Log.e(TAG, "Delete reading API error: " + e.getMessage());
+                callback.onError(e.getMessage(), e.getStatusCode());
+            } catch (Exception e) {
+                Log.e(TAG, "Delete reading unexpected error: " + e.getMessage());
+                callback.onError("Failed to delete reading: " + e.getMessage(), -1);
             }
         });
     }
@@ -183,8 +276,22 @@ public class ReadingService {
             reading.setId(itemJson.optString("id"));
             reading.setTitle(itemJson.optString("title"));
             reading.setDescription(itemJson.optString("description"));
+            reading.setContent(itemJson.optString("content"));
             reading.setImageUrl(itemJson.optString("imageUrl"));
-            // Parse dates if needed
+            reading.setUserId(itemJson.optString("userId"));
+            
+            // Parse questions
+            JSONArray questionsArray = itemJson.optJSONArray("questions");
+            if (questionsArray != null) {
+                List<ReadingQuestion> questions = new ArrayList<>();
+                for (int j = 0; j < questionsArray.length(); j++) {
+                    JSONObject questionJson = questionsArray.getJSONObject(j);
+                    ReadingQuestion question = parseReadingQuestion(questionJson);
+                    questions.add(question);
+                }
+                reading.setQuestions(questions);
+            }
+            
             readings.add(reading);
         }
         pagedResponse.setItems(readings);
@@ -237,6 +344,86 @@ public class ReadingService {
         }
         
         return question;
+    }
+
+    // JSON request body creation methods
+    private JSONObject createReadingRequestBody(ReadingCreateDTO readingData) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("title", readingData.getTitle());
+        json.put("content", readingData.getContent());
+        
+        if (readingData.getImageUrl() != null && !readingData.getImageUrl().trim().isEmpty()) {
+            json.put("imageUrl", readingData.getImageUrl());
+        }
+        
+        if (readingData.getDescription() != null && !readingData.getDescription().trim().isEmpty()) {
+            json.put("description", readingData.getDescription());
+        }
+        
+        if (readingData.getQuestions() != null && !readingData.getQuestions().isEmpty()) {
+            JSONArray questionsArray = new JSONArray();
+            for (ReadingQuestion question : readingData.getQuestions()) {
+                questionsArray.put(createQuestionJson(question));
+            }
+            json.put("questions", questionsArray);
+        }
+        
+        return json;
+    }
+    
+    private JSONObject createUpdateReadingRequestBody(ReadingUpdateDto readingData) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("id", readingData.getId());
+        json.put("title", readingData.getTitle());
+        json.put("content", readingData.getContent());
+        
+        if (readingData.getImageUrl() != null && !readingData.getImageUrl().trim().isEmpty()) {
+            json.put("imageUrl", readingData.getImageUrl());
+        }
+        
+        if (readingData.getDescription() != null && !readingData.getDescription().trim().isEmpty()) {
+            json.put("description", readingData.getDescription());
+        }
+        
+        if (readingData.getQuestions() != null && !readingData.getQuestions().isEmpty()) {
+            JSONArray questionsArray = new JSONArray();
+            for (ReadingQuestion question : readingData.getQuestions()) {
+                questionsArray.put(createQuestionJson(question));
+            }
+            json.put("questions", questionsArray);
+        }
+        
+        return json;
+    }
+    
+    private JSONObject createQuestionJson(ReadingQuestion question) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("questionText", question.getQuestionText());
+        json.put("questionType", question.getQuestionType());
+        
+        if (question.isSingleChoice()) {
+            if (question.getOptionA() != null && !question.getOptionA().trim().isEmpty()) {
+                json.put("optionA", question.getOptionA());
+            }
+            if (question.getOptionB() != null && !question.getOptionB().trim().isEmpty()) {
+                json.put("optionB", question.getOptionB());
+            }
+            if (question.getOptionC() != null && !question.getOptionC().trim().isEmpty()) {
+                json.put("optionC", question.getOptionC());
+            }
+            if (question.getOptionD() != null && !question.getOptionD().trim().isEmpty()) {
+                json.put("optionD", question.getOptionD());
+            }
+            if (question.getCorrectOption() != null && !question.getCorrectOption().trim().isEmpty()) {
+                json.put("correctOption", question.getCorrectOption());
+            }
+        } else if (question.isFillInBlank()) {
+            if (question.getAnswer() != null && !question.getAnswer().trim().isEmpty()) {
+                json.put("answer", question.getAnswer());
+            }
+        }
+        
+        return json;
     }
 
     public static class ApiException extends Exception {

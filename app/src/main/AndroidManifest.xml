@@ -135,6 +135,20 @@
             android:exported="false"
             android:theme="@style/Theme.QuizApp"
             android:parentActivityName=".ui.activities.ReadingDetailActivity" />
+            
+        <!-- Admin Reading Activity -->
+        <activity
+            android:name=".ui.activities.AdminReadingActivity"
+            android:exported="false"
+            android:theme="@style/Theme.QuizApp"
+            android:parentActivityName=".MainActivity" />
+            
+        <!-- Create Edit Reading Activity -->
+        <activity
+            android:name=".ui.activities.CreateEditReadingActivity"
+            android:exported="false"
+            android:theme="@style/Theme.QuizApp"
+            android:parentActivityName=".ui.activities.AdminReadingActivity" />
     </application>
 
 </manifest>

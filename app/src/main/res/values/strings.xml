@@ -134,4 +134,42 @@
     <string name="correct_answer">Correct!</string>
     <string name="incorrect_answer">Incorrect. The correct answer is: %1$s</string>
     <string name="fill_in_answer_hint">Type your answer here...</string>
+    
+    <!-- Admin Reading CRUD Strings -->
+    <string name="manage_readings">Manage Readings</string>
+    <string name="create_reading">Create Reading</string>
+    <string name="edit_reading">Edit Reading</string>
+    <string name="add_reading">Add Reading</string>
+    <string name="save">Save</string>
+    <string name="refresh">Refresh</string>
+    <string name="delete_reading">Delete Reading</string>
+    <string name="edit_reading_action">Edit Reading</string>
+    <string name="reading_thumbnail">Reading Thumbnail</string>
+    <string name="empty_state_icon">Empty State Icon</string>
+    <string name="add_question">Add Question</string>
+    <string name="delete_question">Delete Question</string>
+    <string name="question_text">Question Text</string>
+    <string name="option_a">Option A</string>
+    <string name="option_b">Option B</string>
+    <string name="option_c">Option C</string>
+    <string name="option_d">Option D</string>
+    <string name="correct_answer_label">Correct Answer</string>
+    <string name="single_choice">Single Choice</string>
+    <string name="fill_in_blank">Fill in the Blank</string>
+    <string name="reading_created_success">Reading created successfully</string>
+    <string name="reading_updated_success">Reading updated successfully</string>
+    <string name="reading_deleted_success">Reading deleted successfully</string>
+    <string name="error_create_reading">Failed to create reading</string>
+    <string name="error_update_reading">Failed to update reading</string>
+    <string name="error_delete_reading">Failed to delete reading</string>
+    <string name="confirm_delete_reading">Are you sure you want to delete this reading?</string>
+    <string name="confirm_delete_question">Are you sure you want to delete this question?</string>
+    <string name="title_required">Title is required</string>
+    <string name="content_required">Content is required</string>
+    <string name="question_text_required">Question text is required</string>
+    <string name="options_required">At least options A and B are required</string>
+    <string name="correct_option_required">Please select the correct option</string>
+    <string name="answer_required">Answer is required</string>
+    <string name="admin_access_required">Admin access required</string>
+    <string name="access_denied">Access denied. Admin role required.</string>
 </resources>

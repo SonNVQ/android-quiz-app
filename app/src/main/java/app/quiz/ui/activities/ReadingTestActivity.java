@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import app.quiz.R;
 import app.quiz.data.models.ReadingQuestion;
@@ -112,7 +113,15 @@ public class ReadingTestActivity extends AppCompatActivity {
         // Update UI
         tvQuestionCounter.setText(getString(R.string.question_counter, 
                 currentQuestionIndex + 1, questions.size()));
-        tvQuestion.setText(question.getQuestionText());
+        
+        // For fill-in-the-blank questions, replace the answer with blank
+        String questionText = question.getQuestionText();
+        if (!question.isSingleChoice() && question.getAnswer() != null && !question.getAnswer().trim().isEmpty()) {
+            String answer = question.getAnswer().trim();
+            questionText = questionText.replaceAll("(?i)" + Pattern.quote(answer), "____");
+        }
+        tvQuestion.setText(questionText);
+        
         progressBar.setProgress(currentQuestionIndex + 1);
         
         // Reset state
