@@ -46,6 +46,13 @@
             android:theme="@style/Theme.QuizApp"
             android:parentActivityName=".MainActivity" />
             
+        <!-- Change Password Activity -->
+        <activity
+            android:name=".ui.activities.ChangePasswordActivity"
+            android:exported="false"
+            android:theme="@style/Theme.QuizApp"
+            android:parentActivityName=".ui.activities.ProfileActivity" />
+            
         <!-- Flashcard List Activity -->
         <activity
             android:name=".ui.activities.FlashcardListActivity"

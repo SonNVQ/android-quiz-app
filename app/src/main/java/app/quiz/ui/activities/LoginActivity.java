@@ -22,6 +22,8 @@ import app.quiz.data.models.User;
 import app.quiz.data.models.LoginResponse;
 import app.quiz.data.remote.ApiClient;
 import app.quiz.utils.SessionManager;
+import org.json.JSONObject;
+import org.json.JSONException;
 
 /**
  * LoginActivity implements UC-01 Login use case
@@ -186,15 +188,32 @@ public class LoginActivity extends AppCompatActivity {
     private void handleLoginSuccess(LoginResponse loginResponse) {
         Log.d(TAG, "Login successful");
         
-        // Get the email from the input field to create user object
-        String email = etEmail.getText().toString().trim();
-        
-        // Create user object with available information
-        User user = new User();
-        user.setEmail(email);
-        user.setUserName(email.split("@")[0]); // Use email prefix as username
-        user.setRole("Student"); // Default role
-        user.setActive(true);
+        // Decode JWT token to extract user information
+        String[] tokenParts = loginResponse.getToken().split("\\.");
+        if (tokenParts.length != 3) {
+            throw new IllegalArgumentException("Invalid token format");
+        }
+        String payload = new String(android.util.Base64.decode(tokenParts[1], android.util.Base64.URL_SAFE));
+         User user = new User();
+         try {
+             JSONObject jsonPayload = new JSONObject(payload);
+
+             user.setId(jsonPayload.getString("id"));
+             user.setUserName(jsonPayload.getString("username"));
+             user.setEmail(jsonPayload.getString("email"));
+             user.setActive(Boolean.parseBoolean(jsonPayload.getString("isActive")));
+             user.setRole(jsonPayload.getString("UserRole"));
+         } catch (JSONException e) {
+             Log.e(TAG, "Error parsing JWT payload", e);
+             Toast.makeText(this, "Error processing login response. Using fallback data.", Toast.LENGTH_SHORT).show();
+
+             // Fallback to minimal user data
+             String email = etEmail.getText().toString().trim();
+             user.setEmail(email);
+             user.setUserName(email.split("@")[0]);
+             user.setRole("User");
+             user.setActive(true);
+         }
         
         // Create user session with both token and user data (POST-02: System maintains active session)
         sessionManager.createSession(loginResponse.getToken(), user);

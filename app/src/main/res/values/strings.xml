@@ -22,6 +22,7 @@
     <string name="error_invalid_password">Password must be at least 8 characters with uppercase, number, and special character</string>
     <string name="error_weak_password">Password must be at least 8 characters with uppercase, number, and special character</string>
     <string name="error_password_mismatch">Passwords do not match</string>
+    <string name="error_password_required">Password is required to update profile</string>
     <string name="error_passwords_not_match">Passwords do not match</string>
     <string name="error_empty_fields">Please fill in all fields</string>
     <string name="error_login_failed">Invalid credentials. Please try again.</string>
@@ -60,7 +61,7 @@
     <string name="new_password">New Password</string>
     <string name="confirm_new_password">Confirm New Password</string>
     <string name="change_password">Change Password</string>
-    <string name="learning_progress">Learning Progress</string>
+
     <string name="logout">Logout</string>
     <string name="logout_confirmation_message">Are you sure you want to logout?</string>
     <string name="cancel_edit">Cancel</string>

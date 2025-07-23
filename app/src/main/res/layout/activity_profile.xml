@@ -63,7 +63,7 @@
                     android:textSize="@dimen/text_size_headline_small"
                     tools:text="John Doe" />
 
-                <!-- User Name (Edit Mode) -->
+                <!-- User Name (Edit Mode) - Hidden for password change only -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_edit_user_name"
                     style="@style/Widget.QuizApp.TextInputLayout"
@@ -78,6 +78,7 @@
                         android:id="@+id/et_edit_user_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:enabled="false"
                         android:inputType="textPersonName"
                         android:textAppearance="?attr/textAppearanceBodyLarge" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -93,7 +94,7 @@
                     android:textColor="?attr/colorOnSurfaceVariant"
                     tools:text="john.doe@example.com" />
 
-                <!-- Email (Edit Mode) -->
+                <!-- Email (Edit Mode) - Hidden for password change only -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/til_edit_email"
                     style="@style/Widget.QuizApp.TextInputLayout"
@@ -108,6 +109,7 @@
                         android:id="@+id/et_edit_email"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:enabled="false"
                         android:inputType="textEmailAddress"
                         android:textAppearance="?attr/textAppearanceBodyLarge" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -139,122 +141,6 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Password Change Section (Edit Mode Only) -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_password_section"
-            style="@style/Widget.QuizApp.CardView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_md"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/card_profile_header">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/spacing_lg">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/spacing_md"
-                    android:text="@string/change_password"
-                    android:textAppearance="?attr/textAppearanceTitleMedium"
-                    android:textSize="@dimen/text_size_title_medium" />
-
-                <!-- Current Password -->
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.QuizApp.TextInputLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/spacing_md"
-                    android:hint="@string/current_password"
-                    app:endIconMode="password_toggle"
-                    app:startIconDrawable="@drawable/ic_lock">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_current_password"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textPassword"
-                        android:textAppearance="?attr/textAppearanceBodyLarge" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- New Password -->
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.QuizApp.TextInputLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/spacing_md"
-                    android:hint="@string/new_password"
-                    app:endIconMode="password_toggle"
-                    app:startIconDrawable="@drawable/ic_lock">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_new_password"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textPassword"
-                        android:textAppearance="?attr/textAppearanceBodyLarge" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- Confirm New Password -->
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.QuizApp.TextInputLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/confirm_new_password"
-                    app:endIconMode="password_toggle"
-                    app:startIconDrawable="@drawable/ic_lock">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_confirm_password"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textPassword"
-                        android:textAppearance="?attr/textAppearanceBodyLarge" />
-                </com.google.android.material.textfield.TextInputLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Learning Statistics -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/card_learning_stats"
-            style="@style/Widget.QuizApp.CardView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/spacing_md"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/card_password_section">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/spacing_lg">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/spacing_md"
-                    android:text="@string/learning_progress"
-                    android:textAppearance="?attr/textAppearanceTitleMedium"
-                    android:textSize="@dimen/text_size_title_medium" />
-
-                <TextView
-                    android:id="@+id/tv_learning_stats"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:lineSpacingExtra="4dp"
-                    android:textAppearance="?attr/textAppearanceBodyLarge"
-                    android:textColor="?attr/colorOnSurfaceVariant"
-                    tools:text="Articles Read: 25\nTime Spent: 120 minutes\nVocabulary Mastered: 150 words" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
 
         <!-- Action Buttons -->
         <LinearLayout
@@ -264,36 +150,18 @@
             android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/card_learning_stats">
+            app:layout_constraintTop_toBottomOf="@id/card_profile_header">
 
-            <!-- Edit Profile Button (View Mode) -->
+            <!-- Change Password Button (View Mode) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_edit_profile"
                 style="@style/Widget.QuizApp.Button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/spacing_md"
-                android:text="@string/edit_profile" />
+                android:text="@string/change_password" />
 
-            <!-- Save Changes Button (Edit Mode) -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_save_changes"
-                style="@style/Widget.QuizApp.Button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/spacing_sm"
-                android:text="@string/save_changes"
-                android:visibility="gone" />
 
-            <!-- Cancel Edit Button (Edit Mode) -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_cancel_edit"
-                style="@style/Widget.QuizApp.Button.Outlined"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/spacing_md"
-                android:text="@string/cancel"
-                android:visibility="gone" />
 
             <!-- Logout Button -->
             <com.google.android.material.button.MaterialButton

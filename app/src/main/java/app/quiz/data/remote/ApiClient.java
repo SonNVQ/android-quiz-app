@@ -18,6 +18,7 @@ import java.util.concurrent.Executors;
 import app.quiz.data.models.LoginRequest;
 import app.quiz.data.models.LoginResponse;
 import app.quiz.data.models.SignupRequest;
+import app.quiz.data.models.UpdateUserRequest;
 import app.quiz.data.models.User;
 
 /**
@@ -30,6 +31,7 @@ public class ApiClient {
     private static final String BASE_URL = "https://learnlanguage-aggbd0h2h6grc6es.eastasia-01.azurewebsites.net";
     private static final String LOGIN_ENDPOINT = "/api/User/login";
     private static final String REGISTER_ENDPOINT = "/api/User/register";
+    private static final String UPDATE_USER_ENDPOINT = "/api/User";
     
     private static final int TIMEOUT_CONNECT = 10000; // 10 seconds
     private static final int TIMEOUT_READ = 15000; // 15 seconds
@@ -130,6 +132,44 @@ public class ApiClient {
     }
     
     /**
+     * Updates user profile information
+     * Based on PUT /api/User endpoint from API documentation
+     * Requires authentication token
+     * 
+     * @param updateRequest The user update request containing all required fields
+     * @param authToken Bearer token for authentication
+     * @param callback Callback for handling response
+     */
+    public void updateUser(UpdateUserRequest updateRequest, String authToken, ApiCallback<Void> callback) {
+        executorService.execute(() -> {
+            try {
+                if (!updateRequest.isValid()) {
+                    callback.onError("Invalid update request data", 400);
+                    return;
+                }
+                
+                String requestBody = updateRequest.toJson();
+                Log.d(TAG, "Update user request: " + requestBody);
+                
+                String response = makePutRequest(UPDATE_USER_ENDPOINT, requestBody, authToken);
+                Log.d(TAG, "Update user response: " + response);
+                
+                callback.onSuccess(null);
+                
+            } catch (ApiException e) {
+                Log.e(TAG, "Update user API error: " + e.getMessage());
+                callback.onError(e.getMessage(), e.getStatusCode());
+            } catch (JSONException e) {
+                Log.e(TAG, "Update user JSON error: " + e.getMessage());
+                callback.onError("Invalid request format", -1);
+            } catch (Exception e) {
+                Log.e(TAG, "Update user unexpected error: " + e.getMessage());
+                callback.onError("Network error occurred", -1);
+            }
+        });
+    }
+    
+    /**
      * Make HTTP POST request
      * @param endpoint API endpoint
      * @param requestBody JSON request body
@@ -164,6 +204,73 @@ public class ApiClient {
                 reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
             } else {
                 reader = new BufferedReader(new InputStreamReader(connection.getErrorStream(), StandardCharsets.UTF_8));
+            }
+            
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+            reader.close();
+            
+            if (statusCode >= 200 && statusCode < 300) {
+                return response.toString();
+            } else {
+                String errorMessage = getErrorMessage(statusCode, response.toString());
+                throw new ApiException(errorMessage, statusCode);
+            }
+            
+        } catch (IOException e) {
+            Log.e(TAG, "Network error: " + e.getMessage());
+            throw new ApiException("Network connection failed", -1);
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+    }
+    
+    /**
+     * Make HTTP PUT request with authentication
+     * @param endpoint API endpoint
+     * @param requestBody JSON request body
+     * @param authToken Bearer token for authentication
+     * @return Response string
+     * @throws ApiException If request fails
+     */
+    private String makePutRequest(String endpoint, String requestBody, String authToken) throws ApiException {
+        HttpURLConnection connection = null;
+        try {
+            URL url = new URL(BASE_URL + endpoint);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("PUT");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestProperty("Accept", "application/json");
+            
+            // Add authorization header
+            if (authToken != null && !authToken.isEmpty()) {
+                connection.setRequestProperty("Authorization", "Bearer " + authToken);
+            }
+            
+            connection.setConnectTimeout(TIMEOUT_CONNECT);
+            connection.setReadTimeout(TIMEOUT_READ);
+            connection.setDoOutput(true);
+            
+            // Write request body
+            try (OutputStream os = connection.getOutputStream()) {
+                byte[] input = requestBody.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            }
+            
+            int statusCode = connection.getResponseCode();
+            Log.d(TAG, "PUT request status code: " + statusCode);
+            
+            // Read response
+            BufferedReader reader;
+            if (statusCode >= 200 && statusCode < 300) {
+                reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            } else {
+                reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
             }
             
             StringBuilder response = new StringBuilder();
